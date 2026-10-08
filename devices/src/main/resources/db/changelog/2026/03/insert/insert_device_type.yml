@@ -1,0 +1,10 @@
+databaseChangeLog:
+  - changeSet:
+      id: insert_device_type_seed
+      author: ilya
+      changes:
+        - insert: { tableName: device_type, columns: [ { column: { name: type_name, value: "Мышь" } } ] }
+        - insert: { tableName: device_type, columns: [ { column: { name: type_name, value: "Клавиатура" } } ] }
+        - insert: { tableName: device_type, columns: [ { column: { name: type_name, value: "Геймпад" } } ] }
+        - insert: { tableName: device_type, columns: [ { column: { name: type_name, value: "Джойстик" } } ] }
+        - insert: { tableName: device_type, columns: [ { column: { name: type_name, value: "Руль" } } ] }

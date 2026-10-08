@@ -1,0 +1,39 @@
+databaseChangeLog:
+  - changeSet:
+      id: create_device
+      author: ilya
+      changes:
+        - createTable:
+            tableName: device
+            remarks: "Устройства"
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+                  remarks: "Первичный ключ"
+              - column:
+                  name: model_name
+                  type: VARCHAR(50)
+                  remarks: "Название модели"
+              - column:
+                  name: manufacturer_id
+                  type: BIGINT
+                  remarks: "Производитель (FK -> Manufacturer)"
+              - column:
+                  name: device_type_id
+                  type: BIGINT
+                  remarks: "Тип устройства (FK -> DeviceType)"
+              - column:
+                  name: connection_type_id
+                  type: BIGINT
+                  remarks: "Тип подключения (FK -> ConnectionType)"
+              - column:
+                  name: release_date
+                  type: DATE
+                  remarks: "Дата выпуска"
+              - column:
+                  name: description
+                  type: TEXT
+                  remarks: "Описание устройства"

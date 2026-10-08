@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - changeSet:
+      id: uq_device_type_name
+      author: ilya
+      changes:
+        - addUniqueConstraint:
+            tableName: device_type
+            columnNames: type_name
+            constraintName: uq_device_type_name

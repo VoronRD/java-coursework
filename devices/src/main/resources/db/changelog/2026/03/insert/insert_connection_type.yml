@@ -1,0 +1,10 @@
+databaseChangeLog:
+  - changeSet:
+      id: insert_connection_type_seed
+      author: ilya
+      changes:
+        - insert: { tableName: connection_type, columns: [ { column: { name: type_name, value: "USB" } } ] }
+        - insert: { tableName: connection_type, columns: [ { column: { name: type_name, value: "Bluetooth" } } ] }
+        - insert: { tableName: connection_type, columns: [ { column: { name: type_name, value: "2.4 GHz" } } ] }
+        - insert: { tableName: connection_type, columns: [ { column: { name: type_name, value: "PS/2" } } ] }
+        - insert: { tableName: connection_type, columns: [ { column: { name: type_name, value: "USB-C" } } ] }

@@ -1,0 +1,15 @@
+databaseChangeLog:
+  - includeAll:
+      path: db/changelog/2026/03/create
+  - includeAll:
+      path: db/changelog/2026/03/constraints
+  - include:
+      file: db/changelog/2026/03/insert/insert_manufacturer.yml
+  - include:
+      file: db/changelog/2026/03/insert/insert_device_type.yml
+  - include:
+      file: db/changelog/2026/03/insert/insert_connection_type.yml
+  - include:
+      file: db/changelog/2026/03/insert/insert_device.yml
+  - include:
+      file: db/changelog/2026/03/insert/insert_feedback.yml

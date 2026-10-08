@@ -1,0 +1,3570 @@
+pom.xml
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.5.8</version>
+        <relativePath />
+    </parent>
+    <groupId>ru.chsu</groupId>
+    <artifactId>computer-devices</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <packaging>jar</packaging>
+    <name>Computer Devices</name>
+    <description>Устройства для управления компьютером</description>
+
+    <properties>
+        <java.version>21</java.version>
+        <vaadin.version>24.9.4</vaadin.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.vaadin</groupId>
+            <artifactId>vaadin-spring-boot-starter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.liquibase</groupId>
+            <artifactId>liquibase-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+            <scope>runtime</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.mapstruct</groupId>
+            <artifactId>mapstruct</artifactId>
+            <version>1.6.3</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.vaadin</groupId>
+            <artifactId>vaadin-dashboard-flow</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.vaadin</groupId>
+            <artifactId>vaadin-charts-flow</artifactId>
+        </dependency>
+    </dependencies>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.vaadin</groupId>
+                <artifactId>vaadin-bom</artifactId>
+                <version>${vaadin.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                        </path>
+                        <path>
+                            <groupId>org.mapstruct</groupId>
+                            <artifactId>mapstruct-processor</artifactId>
+                            <version>1.6.3</version>
+                        </path>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok-mapstruct-binding</artifactId>
+                            <version>0.2.0</version>
+                        </path>
+                    </annotationProcessorPaths>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <excludes>
+                        <exclude>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                        </exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <profiles>
+        <profile>
+            <id>production</id>
+            <dependencies>
+                <dependency>
+                    <groupId>com.vaadin</groupId>
+                    <artifactId>vaadin-core</artifactId>
+                    <exclusions>
+                        <exclusion>
+                            <groupId>com.vaadin</groupId>
+                            <artifactId>vaadin-dev</artifactId>
+                        </exclusion>
+                    </exclusions>
+                </dependency>
+            </dependencies>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.vaadin</groupId>
+                        <artifactId>vaadin-maven-plugin</artifactId>
+                        <version>${vaadin.version}</version>
+                        <executions>
+                            <execution>
+                                <id>frontend</id>
+                                <phase>compile</phase>
+                                <goals>
+                                    <goal>prepare-frontend</goal>
+                                    <goal>build-frontend</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
+    <repositories>
+        <repository>
+            <id>central</id>
+            <url>https://repo.maven.apache.org/maven2</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>vaadin-directory</id>
+            <url>https://maven.vaadin.com/vaadin-addons</url>
+        </repository>
+    </repositories>
+</project>
+
+ 
+================== FILE: C:\Users\Iluha\Desktop\devices_no_docker\src\main\java\ru\chsu\computer_devices\ComputerDevicesApplication.java ================== 
+ 
+package ru.chsu.computer_devices;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import com.vaadin.flow.theme.Theme;
+import com.vaadin.flow.component.page.AppShellConfigurator;
+
+@SpringBootApplication
+@Theme("default")
+public class ComputerDevicesApplication implements AppShellConfigurator {
+
+    public static void main(String[] args) {
+        SpringApplication.run(ComputerDevicesApplication.class, args);
+    }
+} 
+ 
+================== FILE: C:\Users\Iluha\Desktop\devices_no_docker\src\main\java\ru\chsu\computer_devices\exception\DeviceExistException.java ================== 
+ 
+package ru.chsu.computer_devices.exception;
+
+public class DeviceExistException extends RuntimeException {
+    public DeviceExistException(String message) {
+        super(message);
+    }
+} 
+ 
+================== FILE: C:\Users\Iluha\Desktop\devices_no_docker\src\main\java\ru\chsu\computer_devices\exception\DeviceNotFoundException.java ================== 
+ 
+package ru.chsu.computer_devices.exception;
+
+public class DeviceNotFoundException extends RuntimeException {
+    public DeviceNotFoundException(Long id) {
+        super("Устройство с id: " + id + " не найдено");
+    }
+
+    public DeviceNotFoundException(String message) {
+        super(message);
+    }
+} 
+ 
+================== FILE: C:\Users\Iluha\Desktop\devices_no_docker\src\main\java\ru\chsu\computer_devices\exception\ExceptionHandler.java ================== 
+ 
+package ru.chsu.computer_devices.exception;
+
+import com.vaadin.flow.component.UI;
+import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.notification.NotificationVariant;
+import org.springframework.stereotype.Component;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+
+@Component
+public class ExceptionHandler {
+
+    public void handleException(Exception ex) {
+        if (UI.getCurrent() == null) return;
+        UI.getCurrent().access(() -> {
+            String message = ex.getMessage();
+
+            if (ex instanceof ManufacturerExistException ||
+                    ex instanceof DeviceExistException ||
+                    ex instanceof ReferenceExistException) {
+                Notification.show(message, 5000, Notification.Position.BOTTOM_CENTER)
+                        .addThemeVariants(NotificationVariant.LUMO_WARNING);
+
+            } else if (ex instanceof ManufacturerNotFoundException ||
+                    ex instanceof DeviceNotFoundException ||
+                    ex instanceof FeedbackNotFoundException ||
+                    ex instanceof ReferenceNotFoundException) {
+                Notification.show(message, 5000, Notification.Position.BOTTOM_CENTER)
+                        .addThemeVariants(NotificationVariant.LUMO_WARNING);
+
+            } else if (ex instanceof MethodArgumentNotValidException) {
+                Notification.show("Ошибка валидации: " + message, 5000, Notification.Position.BOTTOM_CENTER)
+                        .addThemeVariants(NotificationVariant.LUMO_ERROR);
+
+            } else {
+                Notification.show("Произошла ошибка: " + message, 5000, Notification.Position.BOTTOM_CENTER)
+                        .addThemeVariants(NotificationVariant.LUMO_ERROR);
+            }
+        });
+    }
+} 
+ 
+================== FILE: C:\Users\Iluha\Desktop\devices_no_docker\src\main\java\ru\chsu\computer_devices\exception\FeedbackNotFoundException.java ================== 
+ 
+package ru.chsu.computer_devices.exception;
+
+public class FeedbackNotFoundException extends RuntimeException {
+    public FeedbackNotFoundException(Long id) {
+        super("Отзыв с id: " + id + " не найден");
+    }
+} 
+ 
+================== FILE: C:\Users\Iluha\Desktop\devices_no_docker\src\main\java\ru\chsu\computer_devices\exception\ManufacturerExistException.java ================== 
+ 
+package ru.chsu.computer_devices.exception;
+
+public class ManufacturerExistException extends RuntimeException {
+    public ManufacturerExistException(String message) {
+        super(message);
+    }
+} 
+ 
+================== FILE: C:\Users\Iluha\Desktop\devices_no_docker\src\main\java\ru\chsu\computer_devices\exception\ManufacturerNotFoundException.java ================== 
+ 
+package ru.chsu.computer_devices.exception;
+
+public class ManufacturerNotFoundException extends RuntimeException {
+    public ManufacturerNotFoundException(Long id) {
+        super("Производитель с id: " + id + " не найден");
+    }
+
+    public ManufacturerNotFoundException(String message) {
+        super(message);
+    }
+} 
+ 
+================== FILE: C:\Users\Iluha\Desktop\devices_no_docker\src\main\java\ru\chsu\computer_devices\exception\ReferenceExistException.java ================== 
+ 
+package ru.chsu.computer_devices.exception;
+
+public class ReferenceExistException extends RuntimeException {
+    public ReferenceExistException(String message) {
+        super(message);
+    }
+} 
+ 
+================== FILE: C:\Users\Iluha\Desktop\devices_no_docker\src\main\java\ru\chsu\computer_devices\exception\ReferenceNotFoundException.java ================== 
+ 
+package ru.chsu.computer_devices.exception;
+
+public class ReferenceNotFoundException extends RuntimeException {
+    public ReferenceNotFoundException(String message) {
+        super(message);
+    }
+} 
+ 
+================== FILE: C:\Users\Iluha\Desktop\devices_no_docker\src\main\java\ru\chsu\computer_devices\mapper\ConnectionTypeMapper.java ================== 
+ 
+package ru.chsu.computer_devices.mapper;
+
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
+import ru.chsu.computer_devices.model.dto.ConnectionTypeForm;
+import ru.chsu.computer_devices.model.dto.ConnectionTypeGrid;
+import ru.chsu.computer_devices.model.entity.ConnectionType;
+import ru.chsu.computer_devices.model.entity.Device;
+
+import java.util.List;
+
+@Mapper(componentModel = "spring")
+public interface ConnectionTypeMapper {
+
+    @Mapping(target = "devices", ignore = true)
+    @Mapping(target = "id", ignore = true)
+    ConnectionType toEntityForm(ConnectionTypeForm form);
+
+    @Mapping(target = "devices", ignore = true)
+    @Mapping(target = "id", ignore = true)
+    void updateFromForm(ConnectionTypeForm form, @MappingTarget ConnectionType entity);
+
+    @Mapping(target = "deviceNames", expression = "java(mapToDeviceNames(entity.getDevices()))")
+    ConnectionTypeGrid toGrid(ConnectionType entity);
+
+    default List<String> mapToDeviceNames(List<Device> devices) {
+        if (devices == null) {
+            return List.of();
+        }
+        return devices.stream()
+                .map(Device::getModelName)
+                .filter(name -> name != null && !name.isEmpty())
+                .toList();
+    }
+} 
+ 
+================== FILE: C:\Users\Iluha\Desktop\devices_no_docker\src\main\java\ru\chsu\computer_devices\mapper\DeviceMapper.java ================== 
+ 
+package ru.chsu.computer_devices.mapper;
+
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
+import ru.chsu.computer_devices.model.dto.DeviceForm;
+import ru.chsu.computer_devices.model.dto.DeviceGrid;
+import ru.chsu.computer_devices.model.entity.Device;
+
+@Mapper(componentModel = "spring")
+public interface DeviceMapper {
+
+    @Mapping(target = "feedbacks", ignore = true)
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "manufacturer", ignore = true)
+    @Mapping(target = "deviceType", ignore = true)
+    @Mapping(target = "connectionType", ignore = true)
+    Device toEntityForm(DeviceForm form);
+
+    @Mapping(target = "manufacturerName", source = "manufacturer.companyName")
+    @Mapping(target = "deviceTypeName", source = "deviceType.typeName")
+    @Mapping(target = "connectionTypeName", source = "connectionType.typeName")
+    @Mapping(target = "averageRating", ignore = true)
+    DeviceGrid toGrid(Device device);
+
+    @Mapping(target = "feedbacks", ignore = true)
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "manufacturer", ignore = true)
+    @Mapping(target = "deviceType", ignore = true)
+    @Mapping(target = "connectionType", ignore = true)
+    void updateFromForm(DeviceForm form, @MappingTarget Device device);
+} 
+ 
+================== FILE: C:\Users\Iluha\Desktop\devices_no_docker\src\main\java\ru\chsu\computer_devices\mapper\DeviceTypeMapper.java ================== 
+ 
+package ru.chsu.computer_devices.mapper;
+
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
+import ru.chsu.computer_devices.model.dto.DeviceTypeForm;
+import ru.chsu.computer_devices.model.dto.DeviceTypeGrid;
+import ru.chsu.computer_devices.model.entity.Device;
+import ru.chsu.computer_devices.model.entity.DeviceType;
+
+import java.util.List;
+
+@Mapper(componentModel = "spring")
+public interface DeviceTypeMapper {
+
+    @Mapping(target = "devices", ignore = true)
+    @Mapping(target = "id", ignore = true)
+    DeviceType toEntityForm(DeviceTypeForm form);
+
+    @Mapping(target = "devices", ignore = true)
+    @Mapping(target = "id", ignore = true)
+    void updateFromForm(DeviceTypeForm form, @MappingTarget DeviceType entity);
+
+    @Mapping(target = "deviceNames", expression = "java(mapToDeviceNames(entity.getDevices()))")
+    DeviceTypeGrid toGrid(DeviceType entity);
+
+    default List<String> mapToDeviceNames(List<Device> devices) {
+        if (devices == null) {
+            return List.of();
+        }
+        return devices.stream()
+                .map(Device::getModelName)
+                .filter(name -> name != null && !name.isEmpty())
+                .toList();
+    }
+} 
+ 
+================== FILE: C:\Users\Iluha\Desktop\devices_no_docker\src\main\java\ru\chsu\computer_devices\mapper\FeedbackMapper.java ================== 
+ 
+package ru.chsu.computer_devices.mapper;
+
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
+import ru.chsu.computer_devices.model.dto.FeedbackForm;
+import ru.chsu.computer_devices.model.dto.FeedbackGrid;
+import ru.chsu.computer_devices.model.entity.Feedback;
+
+@Mapper(componentModel = "spring")
+public interface FeedbackMapper {
+    @Mapping(target = "device", ignore = true)
+    @Mapping(target = "id", ignore = true)
+    Feedback toEntityForm(FeedbackForm feedbackForm);
+
+    @Mapping(target = "deviceName", source = "device.modelName")
+    FeedbackGrid toGrid(Feedback feedback);
+
+    @Mapping(target = "device", ignore = true)
+    @Mapping(target = "id", ignore = true)
+    void updateFromForm(FeedbackForm feedbackForm, @MappingTarget Feedback feedback);
+} 
+ 
+================== FILE: C:\Users\Iluha\Desktop\devices_no_docker\src\main\java\ru\chsu\computer_devices\mapper\ManufacturerMapper.java ================== 
+ 
+package ru.chsu.computer_devices.mapper;
+
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
+import ru.chsu.computer_devices.model.dto.ManufacturerForm;
+import ru.chsu.computer_devices.model.dto.ManufacturerGrid;
+import ru.chsu.computer_devices.model.entity.Device;
+import ru.chsu.computer_devices.model.entity.Manufacturer;
+
+import java.util.List;
+
+@Mapper(componentModel = "spring")
+public interface ManufacturerMapper {
+
+    ManufacturerForm toForm(Manufacturer manufacturer);
+
+    @Mapping(target = "devices", ignore = true)
+    @Mapping(target = "id", ignore = true)
+    Manufacturer toEntityForm(ManufacturerForm manufacturerForm);
+
+    @Mapping(target = "devices", ignore = true)
+    @Mapping(target = "id", ignore = true)
+    void updateFromForm(ManufacturerForm manufacturerForm, @MappingTarget Manufacturer manufacturer);
+
+    @Mapping(target = "deviceNames", expression = "java(mapToDeviceNames(entity.getDevices()))")
+    ManufacturerGrid toGrid(Manufacturer entity);
+
+    default List<String> mapToDeviceNames(List<Device> devices) {
+        if (devices == null) {
+            return List.of();
+        }
+        return devices.stream()
+                .map(Device::getModelName)
+                .filter(name -> name != null && !name.isEmpty())
+                .toList();
+    }
+} 
+ 
+================== FILE: C:\Users\Iluha\Desktop\devices_no_docker\src\main\java\ru\chsu\computer_devices\model\Rating.java ================== 
+ 
+package ru.chsu.computer_devices.model;
+
+public enum Rating {
+    ONE(1, "★☆☆☆☆"),
+    TWO(2, "★★☆☆☆"),
+    THREE(3, "★★★☆☆"),
+    FOUR(4, "★★★★☆"),
+    FIVE(5, "★★★★★");
+
+    private final int value;
+    private final String stars;
+
+    Rating(int value, String stars) {
+        this.value = value;
+        this.stars = stars;
+    }
+
+    public int getValue() {
+        return value;
+    }
+
+    public String getStars() {
+        return stars;
+    }
+
+    public static Rating fromValue(int value) {
+        for (Rating r : values()) {
+            if (r.value == value) {
+                return r;
+            }
+        }
+        return FIVE;
+    }
+
+    public int toValue() {
+        return value;
+    }
+} 
+ 
+================== FILE: C:\Users\Iluha\Desktop\devices_no_docker\src\main\java\ru\chsu\computer_devices\model\converter\RatingConverter.java ================== 
+ 
+package ru.chsu.computer_devices.model.converter;
+
+import jakarta.persistence.AttributeConverter;
+import jakarta.persistence.Converter;
+import ru.chsu.computer_devices.model.Rating;
+
+@Converter(autoApply = true)
+public class RatingConverter implements AttributeConverter<Rating, Integer> {
+
+    @Override
+    public Integer convertToDatabaseColumn(Rating rating) {
+        if (rating == null) {
+            return null;
+        }
+        return rating.getValue();
+    }
+
+    @Override
+    public Rating convertToEntityAttribute(Integer dbData) {
+        if (dbData == null) {
+            return null;
+        }
+        return Rating.fromValue(dbData);
+    }
+} 
+ 
+================== FILE: C:\Users\Iluha\Desktop\devices_no_docker\src\main\java\ru\chsu\computer_devices\model\dto\ConnectionTypeForm.java ================== 
+ 
+package ru.chsu.computer_devices.model.dto;
+
+import jakarta.validation.constraints.NotBlank;
+import lombok.Data;
+
+@Data
+public class ConnectionTypeForm {
+    @NotBlank(message = "Введите название типа подключения")
+    private String typeName;
+} 
+ 
+================== FILE: C:\Users\Iluha\Desktop\devices_no_docker\src\main\java\ru\chsu\computer_devices\model\dto\ConnectionTypeGrid.java ================== 
+ 
+package ru.chsu.computer_devices.model.dto;
+
+import jakarta.validation.constraints.NotNull;
+import lombok.Data;
+
+import java.util.List;
+
+@Data
+public class ConnectionTypeGrid implements GridAPI<Long> {
+    @NotNull
+    private Long id;
+    private String typeName;
+    private List<String> deviceNames;
+
+    @Override
+    public String toString() {
+        return typeName;
+    }
+
+    @Override
+    public List<String> searchableFields() {
+        return List.of(
+                id == null ? "" : id.toString(),
+                typeName == null ? "" : typeName,
+                deviceNames == null ? "" : String.join(", ", deviceNames)
+        );
+    }
+} 
+ 
+================== FILE: C:\Users\Iluha\Desktop\devices_no_docker\src\main\java\ru\chsu\computer_devices\model\dto\DashboardStats.java ================== 
+ 
+package ru.chsu.computer_devices.model.dto;
+
+import lombok.Data;
+
+import java.util.Map;
+
+@Data
+public class DashboardStats {
+    private Long totalManufacturers;
+    private Long totalDevices;
+    private Long totalFeedbacks;
+    private Double averageRating;
+
+    private Map<String, Long> devicesByManufacturer;
+    private Map<String, Long> devicesByType;
+    private Map<String, Long> devicesByConnectionType;
+    private Map<Integer, Long> feedbacksByRating;
+} 
+ 
+================== FILE: C:\Users\Iluha\Desktop\devices_no_docker\src\main\java\ru\chsu\computer_devices\model\dto\DeviceForm.java ================== 
+ 
+package ru.chsu.computer_devices.model.dto;
+
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import lombok.Data;
+
+import java.time.LocalDate;
+
+@Data
+public class DeviceForm {
+    @NotBlank(message = "Введите название модели")
+    private String modelName;
+    @NotBlank(message = "Введите название производителя")
+    private String manufacturerName;
+    @NotBlank(message = "Введите тип устройства")
+    private String deviceTypeName;
+    @NotBlank(message = "Введите тип подключения")
+    private String connectionTypeName;
+    @NotNull(message = "Введите дату выпуска")
+    private LocalDate releaseDate;
+    @NotBlank(message = "Введите описание")
+    private String description;
+} 
+ 
+================== FILE: C:\Users\Iluha\Desktop\devices_no_docker\src\main\java\ru\chsu\computer_devices\model\dto\DeviceGrid.java ================== 
+ 
+package ru.chsu.computer_devices.model.dto;
+
+import jakarta.validation.constraints.NotNull;
+import lombok.Data;
+
+import java.time.LocalDate;
+import java.util.List;
+
+@Data
+public class DeviceGrid implements GridAPI<Long> {
+    @NotNull
+    private Long id;
+    private String modelName;
+    private String manufacturerName;
+    private String deviceTypeName;
+    private String connectionTypeName;
+    private LocalDate releaseDate;
+    private String description;
+    private Double averageRating;
+
+    @Override
+    public String toString() {
+        return modelName;
+    }
+
+    @Override
+    public List<String> searchableFields() {
+        return List.of(
+                id == null ? "" : id.toString(),
+                modelName == null ? "" : modelName,
+                manufacturerName == null ? "" : manufacturerName,
+                deviceTypeName == null ? "" : deviceTypeName,
+                connectionTypeName == null ? "" : connectionTypeName,
+                releaseDate == null ? "" : releaseDate.toString(),
+                description == null ? "" : description
+        );
+    }
+} 
+ 
+================== FILE: C:\Users\Iluha\Desktop\devices_no_docker\src\main\java\ru\chsu\computer_devices\model\dto\DeviceTypeForm.java ================== 
+ 
+package ru.chsu.computer_devices.model.dto;
+
+import jakarta.validation.constraints.NotBlank;
+import lombok.Data;
+
+@Data
+public class DeviceTypeForm {
+    @NotBlank(message = "Введите название типа устройства")
+    private String typeName;
+} 
+ 
+================== FILE: C:\Users\Iluha\Desktop\devices_no_docker\src\main\java\ru\chsu\computer_devices\model\dto\DeviceTypeGrid.java ================== 
+ 
+package ru.chsu.computer_devices.model.dto;
+
+import jakarta.validation.constraints.NotNull;
+import lombok.Data;
+
+import java.util.List;
+
+@Data
+public class DeviceTypeGrid implements GridAPI<Long> {
+    @NotNull
+    private Long id;
+    private String typeName;
+    private List<String> deviceNames;
+
+    @Override
+    public String toString() {
+        return typeName;
+    }
+
+    @Override
+    public List<String> searchableFields() {
+        return List.of(
+                id == null ? "" : id.toString(),
+                typeName == null ? "" : typeName,
+                deviceNames == null ? "" : String.join(", ", deviceNames)
+        );
+    }
+} 
+ 
+================== FILE: C:\Users\Iluha\Desktop\devices_no_docker\src\main\java\ru\chsu\computer_devices\model\dto\FeedbackForm.java ================== 
+ 
+package ru.chsu.computer_devices.model.dto;
+
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import lombok.Data;
+
+import java.time.LocalDate;
+
+@Data
+public class FeedbackForm {
+    @NotBlank(message = "Введите название устройства")
+    private String deviceName;
+    @NotBlank(message = "Введите ваше имя")
+    private String author;
+    @NotBlank(message = "Введите комментарий")
+    private String comment;
+    @NotNull(message = "Введите рейтинг")
+    @Min(value = 1, message = "Рейтинг должен быть от 1 до 5")
+    @Max(value = 5, message = "Рейтинг должен быть от 1 до 5")
+    private Integer rating;
+    @NotNull(message = "Введите дату")
+    private LocalDate date;
+} 
+ 
+================== FILE: C:\Users\Iluha\Desktop\devices_no_docker\src\main\java\ru\chsu\computer_devices\model\dto\FeedbackGrid.java ================== 
+ 
+package ru.chsu.computer_devices.model.dto;
+
+import jakarta.validation.constraints.NotNull;
+import lombok.Data;
+import ru.chsu.computer_devices.model.Rating;
+
+import java.time.LocalDate;
+import java.util.List;
+
+@Data
+public class FeedbackGrid implements GridAPI<Long> {
+    @NotNull
+    private Long id;
+    private String deviceName;
+    private String author;
+    private String comment;
+    private Rating rating;
+    private LocalDate date;
+
+    @Override
+    public String toString() {
+        return author + " - " + deviceName;
+    }
+
+    @Override
+    public List<String> searchableFields() {
+        return List.of(
+                id == null ? "" : id.toString(),
+                deviceName == null ? "" : deviceName,
+                author == null ? "" : author,
+                comment == null ? "" : comment,
+                rating == null ? "" : rating.getStars(),
+                date == null ? "" : date.toString()
+        );
+    }
+} 
+ 
+================== FILE: C:\Users\Iluha\Desktop\devices_no_docker\src\main\java\ru\chsu\computer_devices\model\dto\GridAPI.java ================== 
+ 
+package ru.chsu.computer_devices.model.dto;
+
+import java.util.List;
+import java.util.Objects;
+
+public interface GridAPI<ID> {
+    ID getId();
+
+    List<String> searchableFields();
+
+    default boolean containsSearchTerm(String searchTerm) {
+        if (searchTerm == null || searchTerm.trim().isEmpty()) {
+            return true;
+        }
+        String lowerTerm = searchTerm.toLowerCase();
+        return searchableFields().stream()
+                .filter(Objects::nonNull)
+                .map(String::toLowerCase)
+                .anyMatch(field -> field.contains(lowerTerm));
+    }
+} 
+ 
+================== FILE: C:\Users\Iluha\Desktop\devices_no_docker\src\main\java\ru\chsu\computer_devices\model\dto\ManufacturerForm.java ================== 
+ 
+package ru.chsu.computer_devices.model.dto;
+
+import jakarta.validation.constraints.NotBlank;
+import lombok.Data;
+
+@Data
+public class ManufacturerForm {
+    @NotBlank(message = "Введите название компании")
+    private String companyName;
+    @NotBlank(message = "Введите описание компании")
+    private String description;
+} 
+ 
+================== FILE: C:\Users\Iluha\Desktop\devices_no_docker\src\main\java\ru\chsu\computer_devices\model\dto\ManufacturerGrid.java ================== 
+ 
+
+package ru.chsu.computer_devices.model.dto;
+
+import jakarta.validation.constraints.NotNull;
+import lombok.Data;
+
+import java.util.List;
+
+@Data
+public class ManufacturerGrid implements GridAPI<Long> {
+    @NotNull
+    private Long id;
+    private String companyName;
+    private String description;
+    private List<String> deviceNames;
+
+    @Override
+    public String toString() {
+        return companyName;
+    }
+
+    @Override
+    public List<String> searchableFields() {
+        return List.of(
+                id == null ? "" : id.toString(),
+                companyName == null ? "" : companyName,
+                description == null ? "" : description,
+                deviceNames == null ? "" : String.join(", ", deviceNames)
+        );
+    }
+} 
+ 
+================== FILE: C:\Users\Iluha\Desktop\devices_no_docker\src\main\java\ru\chsu\computer_devices\model\entity\ConnectionType.java ================== 
+ 
+package ru.chsu.computer_devices.model.entity;
+
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+import org.hibernate.proxy.HibernateProxy;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
+@Getter
+@Setter
+@Entity
+@Table(name = "connection_type")
+public class ConnectionType {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(name = "type_name", length = 50, unique = true)
+    private String typeName;
+
+    @OneToMany(mappedBy = "connectionType", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Device> devices = new ArrayList<>();
+
+    @Override
+    public final boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null) return false;
+        Class<?> oEffectiveClass = (o instanceof HibernateProxy proxy) ? proxy.getHibernateLazyInitializer().getPersistentClass() : o.getClass();
+        Class<?> thisEffectiveClass = (this instanceof HibernateProxy proxy) ? proxy.getHibernateLazyInitializer().getPersistentClass() : this.getClass();
+        if (thisEffectiveClass != oEffectiveClass) return false;
+        ConnectionType that = (ConnectionType) o;
+        return getId() != null && Objects.equals(getId(), that.getId());
+    }
+
+    @Override
+    public final int hashCode() {
+        return (getId() != null) ? getId().hashCode() : getClass().hashCode();
+    }
+} 
+ 
+================== FILE: C:\Users\Iluha\Desktop\devices_no_docker\src\main\java\ru\chsu\computer_devices\model\entity\Device.java ================== 
+ 
+package ru.chsu.computer_devices.model.entity;
+
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+import org.hibernate.proxy.HibernateProxy;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
+@Getter
+@Setter
+@Entity
+@Table(name = "device")
+public class Device {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(name = "model_name", length = 50)
+    private String modelName;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(name = "manufacturer_id")
+    private Manufacturer manufacturer;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(name = "device_type_id")
+    private DeviceType deviceType;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(name = "connection_type_id")
+    private ConnectionType connectionType;
+
+    @Column(name = "release_date")
+    private LocalDate releaseDate;
+
+    @Column(name = "description", columnDefinition = "TEXT")
+    private String description;
+
+    @OneToMany(mappedBy = "device", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Feedback> feedbacks = new ArrayList<>();
+
+    @Override
+    public final boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null) return false;
+        Class<?> oEffectiveClass = (o instanceof HibernateProxy proxy) ? proxy.getHibernateLazyInitializer().getPersistentClass() : o.getClass();
+        Class<?> thisEffectiveClass = (this instanceof HibernateProxy proxy) ? proxy.getHibernateLazyInitializer().getPersistentClass() : this.getClass();
+        if (thisEffectiveClass != oEffectiveClass) return false;
+        Device that = (Device) o;
+        return getId() != null && Objects.equals(getId(), that.getId());
+    }
+
+    @Override
+    public final int hashCode() {
+        return (getId() != null) ? getId().hashCode() : getClass().hashCode();
+    }
+} 
+ 
+================== FILE: C:\Users\Iluha\Desktop\devices_no_docker\src\main\java\ru\chsu\computer_devices\model\entity\DeviceType.java ================== 
+ 
+package ru.chsu.computer_devices.model.entity;
+
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+import org.hibernate.proxy.HibernateProxy;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
+@Getter
+@Setter
+@Entity
+@Table(name = "device_type")
+public class DeviceType {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(name = "type_name", length = 50, unique = true)
+    private String typeName;
+
+    @OneToMany(mappedBy = "deviceType", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Device> devices = new ArrayList<>();
+
+    @Override
+    public final boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null) return false;
+        Class<?> oEffectiveClass = (o instanceof HibernateProxy proxy) ? proxy.getHibernateLazyInitializer().getPersistentClass() : o.getClass();
+        Class<?> thisEffectiveClass = (this instanceof HibernateProxy proxy) ? proxy.getHibernateLazyInitializer().getPersistentClass() : this.getClass();
+        if (thisEffectiveClass != oEffectiveClass) return false;
+        DeviceType that = (DeviceType) o;
+        return getId() != null && Objects.equals(getId(), that.getId());
+    }
+
+    @Override
+    public final int hashCode() {
+        return (getId() != null) ? getId().hashCode() : getClass().hashCode();
+    }
+} 
+ 
+================== FILE: C:\Users\Iluha\Desktop\devices_no_docker\src\main\java\ru\chsu\computer_devices\model\entity\Feedback.java ================== 
+ 
+package ru.chsu.computer_devices.model.entity;
+
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+import org.hibernate.proxy.HibernateProxy;
+import ru.chsu.computer_devices.model.Rating;
+import ru.chsu.computer_devices.model.converter.RatingConverter;
+
+import java.time.LocalDate;
+import java.util.Objects;
+
+@Getter
+@Setter
+@Entity
+@Table(name = "feedback")
+public class Feedback {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(name = "device_id")
+    private Device device;
+
+    @Column(name = "author", length = 50)
+    private String author;
+
+    @Column(name = "comment", columnDefinition = "TEXT")
+    private String comment;
+
+    @Convert(converter = RatingConverter.class)
+    @Column(name = "rating")
+    private Rating rating;
+
+    @Column(name = "date")
+    private LocalDate date;
+
+    @Override
+    public final boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null) return false;
+        Class<?> oEffectiveClass = (o instanceof HibernateProxy proxy) ? proxy.getHibernateLazyInitializer().getPersistentClass() : o.getClass();
+        Class<?> thisEffectiveClass = (this instanceof HibernateProxy proxy) ? proxy.getHibernateLazyInitializer().getPersistentClass() : this.getClass();
+        if (thisEffectiveClass != oEffectiveClass) return false;
+        Feedback that = (Feedback) o;
+        return getId() != null && Objects.equals(getId(), that.getId());
+    }
+
+    @Override
+    public final int hashCode() {
+        return (getId() != null) ? getId().hashCode() : getClass().hashCode();
+    }
+} 
+ 
+================== FILE: C:\Users\Iluha\Desktop\devices_no_docker\src\main\java\ru\chsu\computer_devices\model\entity\Manufacturer.java ================== 
+ 
+package ru.chsu.computer_devices.model.entity;
+
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+import org.hibernate.proxy.HibernateProxy;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
+@Getter
+@Setter
+@Entity
+@Table(name = "manufacturer")
+public class Manufacturer {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(name = "company_name", length = 50)
+    private String companyName;
+
+    @Column(name = "description", columnDefinition = "TEXT")
+    private String description;
+
+    @OneToMany(mappedBy = "manufacturer", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Device> devices = new ArrayList<>();
+
+    @Override
+    public final boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null) return false;
+        Class<?> oEffectiveClass = (o instanceof HibernateProxy proxy) ? proxy.getHibernateLazyInitializer().getPersistentClass() : o.getClass();
+        Class<?> thisEffectiveClass = (this instanceof HibernateProxy proxy) ? proxy.getHibernateLazyInitializer().getPersistentClass() : this.getClass();
+        if (thisEffectiveClass != oEffectiveClass) return false;
+        Manufacturer that = (Manufacturer) o;
+        return getId() != null && Objects.equals(getId(), that.getId());
+    }
+
+    @Override
+    public final int hashCode() {
+        return (getId() != null) ? getId().hashCode() : getClass().hashCode();
+    }
+} 
+ 
+================== FILE: C:\Users\Iluha\Desktop\devices_no_docker\src\main\java\ru\chsu\computer_devices\repository\ConnectionTypeRepository.java ================== 
+ 
+package ru.chsu.computer_devices.repository;
+
+import org.jetbrains.annotations.NotNull;
+import org.springframework.data.jpa.repository.EntityGraph;
+import org.springframework.data.jpa.repository.JpaRepository;
+import ru.chsu.computer_devices.model.entity.ConnectionType;
+
+import java.util.List;
+import java.util.Optional;
+
+public interface ConnectionTypeRepository extends JpaRepository<ConnectionType, Long> {
+
+    @NotNull
+    @EntityGraph(attributePaths = {"devices"})
+    List<ConnectionType> findAll();
+
+    @EntityGraph(attributePaths = {"devices"})
+    @NotNull Optional<ConnectionType> findById(@NotNull Long id);
+
+    Optional<ConnectionType> findByTypeName(String typeName);
+} 
+ 
+================== FILE: C:\Users\Iluha\Desktop\devices_no_docker\src\main\java\ru\chsu\computer_devices\repository\DeviceRepository.java ================== 
+ 
+package ru.chsu.computer_devices.repository;
+
+import org.jetbrains.annotations.NotNull;
+import org.springframework.data.jpa.repository.EntityGraph;
+import org.springframework.data.jpa.repository.JpaRepository;
+import ru.chsu.computer_devices.model.entity.Device;
+
+import java.util.List;
+import java.util.Optional;
+
+public interface DeviceRepository extends JpaRepository<Device, Long> {
+    @NotNull
+    @EntityGraph(attributePaths = {"manufacturer", "deviceType", "connectionType", "feedbacks"})
+    List<Device> findAll();
+
+    @EntityGraph(attributePaths = {"manufacturer", "deviceType", "connectionType", "feedbacks"})
+    @NotNull Optional<Device> findById(@NotNull Long id);
+
+    boolean existsDeviceByModelName(String modelName);
+
+    Optional<Device> findByModelName(@NotNull String modelName);
+} 
+ 
+================== FILE: C:\Users\Iluha\Desktop\devices_no_docker\src\main\java\ru\chsu\computer_devices\repository\DeviceTypeRepository.java ================== 
+ 
+package ru.chsu.computer_devices.repository;
+
+import org.jetbrains.annotations.NotNull;
+import org.springframework.data.jpa.repository.EntityGraph;
+import org.springframework.data.jpa.repository.JpaRepository;
+import ru.chsu.computer_devices.model.entity.DeviceType;
+
+import java.util.List;
+import java.util.Optional;
+
+public interface DeviceTypeRepository extends JpaRepository<DeviceType, Long> {
+
+    @NotNull
+    @EntityGraph(attributePaths = {"devices"})
+    List<DeviceType> findAll();
+
+    @EntityGraph(attributePaths = {"devices"})
+    @NotNull Optional<DeviceType> findById(@NotNull Long id);
+
+    Optional<DeviceType> findByTypeName(String typeName);
+} 
+ 
+================== FILE: C:\Users\Iluha\Desktop\devices_no_docker\src\main\java\ru\chsu\computer_devices\repository\FeedbackRepository.java ================== 
+ 
+package ru.chsu.computer_devices.repository;
+
+import org.jetbrains.annotations.NotNull;
+import org.springframework.data.jpa.repository.EntityGraph;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import ru.chsu.computer_devices.model.entity.Feedback;
+
+import java.util.List;
+import java.util.Optional;
+
+public interface FeedbackRepository extends JpaRepository<Feedback, Long> {
+    @NotNull
+    @EntityGraph(attributePaths = {"device"})
+    List<Feedback> findAll();
+
+    @EntityGraph(attributePaths = {"device"})
+    @NotNull Optional<Feedback> findById(@NotNull Long id);
+
+    List<Feedback> findByDeviceId(Long deviceId);
+
+    @Query("SELECT AVG(f.rating) FROM Feedback f WHERE f.device.id = :deviceId")
+    Double getAverageRatingByDeviceId(Long deviceId);
+} 
+ 
+================== FILE: C:\Users\Iluha\Desktop\devices_no_docker\src\main\java\ru\chsu\computer_devices\repository\ManufacturerRepository.java ================== 
+ 
+package ru.chsu.computer_devices.repository;
+
+import org.jetbrains.annotations.NotNull;
+import org.springframework.data.jpa.repository.EntityGraph;
+import org.springframework.data.jpa.repository.JpaRepository;
+import ru.chsu.computer_devices.model.entity.Manufacturer;
+
+import java.util.List;
+import java.util.Optional;
+
+public interface ManufacturerRepository extends JpaRepository<Manufacturer, Long> {
+    @EntityGraph(attributePaths = {"devices"})
+    @NotNull List<Manufacturer> findAll();
+
+    @EntityGraph(attributePaths = {"devices"})
+    @NotNull Optional<Manufacturer> findById(@NotNull Long id);
+
+    boolean existsManufacturerByCompanyName(String companyName);
+
+    Optional<Manufacturer> findByCompanyName(@NotNull String companyName);
+} 
+ 
+================== FILE: C:\Users\Iluha\Desktop\devices_no_docker\src\main\java\ru\chsu\computer_devices\service\ConnectionTypeService.java ================== 
+ 
+package ru.chsu.computer_devices.service;
+
+import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
+import ru.chsu.computer_devices.exception.ReferenceExistException;
+import ru.chsu.computer_devices.exception.ReferenceNotFoundException;
+import ru.chsu.computer_devices.mapper.ConnectionTypeMapper;
+import ru.chsu.computer_devices.model.dto.ConnectionTypeForm;
+import ru.chsu.computer_devices.model.dto.ConnectionTypeGrid;
+import ru.chsu.computer_devices.model.entity.ConnectionType;
+import ru.chsu.computer_devices.model.entity.Device;
+import ru.chsu.computer_devices.repository.ConnectionTypeRepository;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Service
+@RequiredArgsConstructor
+@Validated
+public class ConnectionTypeService implements CrudService<ConnectionTypeGrid, ConnectionTypeForm, Long> {
+    private final ConnectionTypeRepository connectionTypeRepository;
+    private final ConnectionTypeMapper connectionTypeMapper;
+
+
+    @Override
+    public List<ConnectionTypeGrid> findAll() {
+        return connectionTypeRepository.findAll().stream()
+                .map(connectionTypeMapper::toGrid)
+                .toList();
+    }
+
+    @Override
+    public ConnectionTypeGrid findById(@NotNull Long id) {
+        return connectionTypeRepository.findById(id)
+                .map(connectionTypeMapper::toGrid)
+                .orElseThrow(() -> new ReferenceNotFoundException("Тип подключения с id: " + id + " не найден"));
+    }
+
+    @Transactional
+    @Override
+    public ConnectionTypeGrid create(@Valid ConnectionTypeForm form) {
+        validateTypeName(form.getTypeName());
+        ConnectionType entity = connectionTypeMapper.toEntityForm(form);
+        return connectionTypeMapper.toGrid(connectionTypeRepository.save(entity));
+    }
+
+    @Transactional
+    @Override
+    public ConnectionTypeGrid update(@NotNull Long id, @Valid ConnectionTypeForm form) {
+        ConnectionType entity = connectionTypeRepository.findById(id)
+                .orElseThrow(() -> new ReferenceNotFoundException("Тип подключения с id: " + id + " не найден"));
+        if (!entity.getTypeName().equals(form.getTypeName())) {
+            validateTypeName(form.getTypeName());
+        }
+        connectionTypeMapper.updateFromForm(form, entity);
+        return connectionTypeMapper.toGrid(connectionTypeRepository.save(entity));
+    }
+
+    @Transactional
+    @Override
+    public void delete(@NotNull Long id) {
+        if (!connectionTypeRepository.existsById(id)) {
+            throw new ReferenceNotFoundException("Тип подключения с id: " + id + " не найден");
+        }
+        connectionTypeRepository.deleteById(id);
+    }
+
+    private void validateTypeName(String typeName) {
+        if (connectionTypeRepository.findByTypeName(typeName).isPresent()) {
+            throw new ReferenceExistException("Тип подключения '" + typeName + "' уже существует");
+        }
+    }
+
+    public boolean hasDevices(Long id) {
+        ConnectionType connectionType = connectionTypeRepository.findById(id)
+                .orElseThrow(() -> new ReferenceNotFoundException("Тип подключения с id: " + id + " не найден"));
+        return connectionType.getDevices() != null && !connectionType.getDevices().isEmpty();
+    }
+
+    public String getDevicesList(Long id) {
+        ConnectionType connectionType = connectionTypeRepository.findById(id)
+                .orElseThrow(() -> new ReferenceNotFoundException("Тип подключения с id: " + id + " не найден"));
+        if (connectionType.getDevices() == null || connectionType.getDevices().isEmpty()) {
+            return "Нет устройств";
+        }
+        return connectionType.getDevices().stream()
+                .map(Device::getModelName)
+                .collect(Collectors.joining("\n• ", "• ", ""));
+    }
+} 
+ 
+================== FILE: C:\Users\Iluha\Desktop\devices_no_docker\src\main\java\ru\chsu\computer_devices\service\CrudService.java ================== 
+ 
+package ru.chsu.computer_devices.service;
+
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+
+import java.util.List;
+
+public interface CrudService<GRID, FORM, ID> {
+    List<GRID> findAll();
+
+    GRID findById(@NotNull ID id);
+
+    GRID create(@Valid FORM form);
+
+    GRID update(@NotNull ID id, @Valid FORM form);
+
+    void delete(@NotNull ID id);
+} 
+ 
+================== FILE: C:\Users\Iluha\Desktop\devices_no_docker\src\main\java\ru\chsu\computer_devices\service\DashboardService.java ================== 
+ 
+package ru.chsu.computer_devices.service;
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import ru.chsu.computer_devices.model.dto.DashboardStats;
+import ru.chsu.computer_devices.repository.DeviceRepository;
+import ru.chsu.computer_devices.repository.FeedbackRepository;
+import ru.chsu.computer_devices.repository.ManufacturerRepository;
+
+import java.util.Map;
+import java.util.stream.Collectors;
+
+@Service
+@RequiredArgsConstructor
+public class DashboardService {
+    private final ManufacturerRepository manufacturerRepository;
+    private final DeviceRepository deviceRepository;
+    private final FeedbackRepository feedbackRepository;
+
+    public DashboardStats getDashboardStats() {
+        DashboardStats stats = new DashboardStats();
+
+        stats.setTotalManufacturers(manufacturerRepository.count());
+        stats.setTotalDevices(deviceRepository.count());
+        stats.setTotalFeedbacks(feedbackRepository.count());
+
+        Double avgRating = feedbackRepository.findAll().stream()
+                .mapToInt(f -> f.getRating().getValue())
+                .average()
+                .orElse(0.0);
+        stats.setAverageRating(avgRating);
+
+        stats.setDevicesByManufacturer(getDevicesByManufacturer());
+        stats.setDevicesByType(getDevicesByType());
+        stats.setDevicesByConnectionType(getDevicesByConnectionType());
+        stats.setFeedbacksByRating(getFeedbacksByRating());
+
+        return stats;
+    }
+
+    private Map<String, Long> getDevicesByManufacturer() {
+        return deviceRepository.findAll().stream()
+                .collect(Collectors.groupingBy(
+                        device -> device.getManufacturer().getCompanyName(),
+                        Collectors.counting()
+                ));
+    }
+
+    private Map<String, Long> getDevicesByType() {
+        return deviceRepository.findAll().stream()
+                .collect(Collectors.groupingBy(
+                        device -> device.getDeviceType().getTypeName(),
+                        Collectors.counting()
+                ));
+    }
+
+    private Map<String, Long> getDevicesByConnectionType() {
+        return deviceRepository.findAll().stream()
+                .collect(Collectors.groupingBy(
+                        device -> device.getConnectionType().getTypeName(),
+                        Collectors.counting()
+                ));
+    }
+
+    private Map<Integer, Long> getFeedbacksByRating() {
+        return feedbackRepository.findAll().stream()
+                .collect(Collectors.groupingBy(
+                        feedback -> feedback.getRating().getValue(),
+                        Collectors.counting()
+                ));
+    }
+} 
+ 
+================== FILE: C:\Users\Iluha\Desktop\devices_no_docker\src\main\java\ru\chsu\computer_devices\service\DeviceService.java ================== 
+ 
+package ru.chsu.computer_devices.service;
+
+import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
+import ru.chsu.computer_devices.exception.DeviceExistException;
+import ru.chsu.computer_devices.exception.DeviceNotFoundException;
+import ru.chsu.computer_devices.exception.ManufacturerNotFoundException;
+import ru.chsu.computer_devices.exception.ReferenceNotFoundException;
+import ru.chsu.computer_devices.mapper.DeviceMapper;
+import ru.chsu.computer_devices.model.dto.DeviceForm;
+import ru.chsu.computer_devices.model.dto.DeviceGrid;
+import ru.chsu.computer_devices.model.entity.ConnectionType;
+import ru.chsu.computer_devices.model.entity.Device;
+import ru.chsu.computer_devices.model.entity.DeviceType;
+import ru.chsu.computer_devices.model.entity.Manufacturer;
+import ru.chsu.computer_devices.repository.*;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Service
+@RequiredArgsConstructor
+@Validated
+public class DeviceService implements CrudService<DeviceGrid, DeviceForm, Long> {
+    private final DeviceRepository deviceRepository;
+    private final DeviceMapper deviceMapper;
+    private final ManufacturerRepository manufacturerRepository;
+    private final DeviceTypeRepository deviceTypeRepository;
+    private final ConnectionTypeRepository connectionTypeRepository;
+    private final FeedbackRepository feedbackRepository;
+
+    @Override
+    public List<DeviceGrid> findAll() {
+        List<Device> devices = deviceRepository.findAll();
+        return devices.stream()
+                .map(device -> {
+                    DeviceGrid grid = deviceMapper.toGrid(device);
+                    Double avgRating = feedbackRepository.getAverageRatingByDeviceId(device.getId());
+                    grid.setAverageRating(avgRating != null ? avgRating : 0.0);
+                    return grid;
+                })
+                .toList();
+    }
+
+    @Override
+    public DeviceGrid findById(@NotNull Long id) {
+        Device device = deviceRepository.findById(id)
+                .orElseThrow(() -> new DeviceNotFoundException(id));
+        DeviceGrid grid = deviceMapper.toGrid(device);
+        Double avgRating = feedbackRepository.getAverageRatingByDeviceId(id);
+        grid.setAverageRating(avgRating != null ? avgRating : 0.0);
+        return grid;
+    }
+
+    @Transactional
+    @Override
+    public DeviceGrid create(@Valid DeviceForm form) {
+        validateDeviceName(form.getModelName());
+
+        Manufacturer manufacturer = manufacturerRepository.findByCompanyName(form.getManufacturerName())
+                .orElseThrow(() -> new ManufacturerNotFoundException("Производитель: " + form.getManufacturerName() + " не найден"));
+
+        DeviceType deviceType = deviceTypeRepository.findByTypeName(form.getDeviceTypeName())
+                .orElseThrow(() -> new ReferenceNotFoundException("Тип устройства: " + form.getDeviceTypeName() + " не найден"));
+
+        ConnectionType connectionType = connectionTypeRepository.findByTypeName(form.getConnectionTypeName())
+                .orElseThrow(() -> new ReferenceNotFoundException("Тип подключения: " + form.getConnectionTypeName() + " не найден"));
+
+        Device device = deviceMapper.toEntityForm(form);
+        device.setManufacturer(manufacturer);
+        device.setDeviceType(deviceType);
+        device.setConnectionType(connectionType);
+
+        Device saved = deviceRepository.save(device);
+        DeviceGrid grid = deviceMapper.toGrid(saved);
+        grid.setAverageRating(0.0);
+        return grid;
+    }
+
+    @Transactional
+    @Override
+    public DeviceGrid update(@NotNull Long id, @Valid DeviceForm form) {
+        Device device = deviceRepository.findById(id)
+                .orElseThrow(() -> new DeviceNotFoundException(id));
+
+        if (!device.getModelName().equals(form.getModelName())) {
+            validateDeviceName(form.getModelName());
+        }
+
+        Manufacturer manufacturer = manufacturerRepository.findByCompanyName(form.getManufacturerName())
+                .orElseThrow(() -> new ManufacturerNotFoundException("Производитель: " + form.getManufacturerName() + " не найден"));
+
+        DeviceType deviceType = deviceTypeRepository.findByTypeName(form.getDeviceTypeName())
+                .orElseThrow(() -> new ReferenceNotFoundException("Тип устройства: " + form.getDeviceTypeName() + " не найден"));
+
+        ConnectionType connectionType = connectionTypeRepository.findByTypeName(form.getConnectionTypeName())
+                .orElseThrow(() -> new ReferenceNotFoundException("Тип подключения: " + form.getConnectionTypeName() + " не найден"));
+
+        device.setManufacturer(manufacturer);
+        device.setDeviceType(deviceType);
+        device.setConnectionType(connectionType);
+        deviceMapper.updateFromForm(form, device);
+
+        Device saved = deviceRepository.save(device);
+        DeviceGrid grid = deviceMapper.toGrid(saved);
+        Double avgRating = feedbackRepository.getAverageRatingByDeviceId(id);
+        grid.setAverageRating(avgRating != null ? avgRating : 0.0);
+        return grid;
+    }
+
+    @Transactional
+    @Override
+    public void delete(@NotNull Long id) {
+        Device device = deviceRepository.findById(id)
+                .orElseThrow(() -> new DeviceNotFoundException(id));
+        deviceRepository.delete(device);
+    }
+
+    private void validateDeviceName(String modelName) {
+        if (deviceRepository.existsDeviceByModelName(modelName)) {
+            throw new DeviceExistException("Устройство с названием '" + modelName + "' уже существует");
+        }
+    }
+
+    // Методы для проверки связей с отзывами
+    public boolean hasFeedbacks(Long id) {
+        Device device = deviceRepository.findById(id)
+                .orElseThrow(() -> new DeviceNotFoundException(id));
+        return device.getFeedbacks() != null && !device.getFeedbacks().isEmpty();
+    }
+
+    public int getFeedbacksCount(Long id) {
+        Device device = deviceRepository.findById(id)
+                .orElseThrow(() -> new DeviceNotFoundException(id));
+        return device.getFeedbacks() != null ? device.getFeedbacks().size() : 0;
+    }
+
+    public String getFeedbacksList(Long id) {
+        Device device = deviceRepository.findById(id)
+                .orElseThrow(() -> new DeviceNotFoundException(id));
+        if (device.getFeedbacks() == null || device.getFeedbacks().isEmpty()) {
+            return "Нет отзывов";
+        }
+        return device.getFeedbacks().stream()
+                .limit(5)
+                .map(f -> "• " + f.getAuthor() + ": " +
+                        (f.getComment().length() > 50 ? f.getComment().substring(0, 50) + "..." : f.getComment()))
+                .collect(Collectors.joining("\n"));
+    }
+} 
+ 
+================== FILE: C:\Users\Iluha\Desktop\devices_no_docker\src\main\java\ru\chsu\computer_devices\service\DeviceTypeService.java ================== 
+ 
+package ru.chsu.computer_devices.service;
+
+import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
+import ru.chsu.computer_devices.exception.ReferenceExistException;
+import ru.chsu.computer_devices.exception.ReferenceNotFoundException;
+import ru.chsu.computer_devices.mapper.DeviceTypeMapper;
+import ru.chsu.computer_devices.model.dto.DeviceTypeForm;
+import ru.chsu.computer_devices.model.dto.DeviceTypeGrid;
+import ru.chsu.computer_devices.model.entity.Device;
+import ru.chsu.computer_devices.model.entity.DeviceType;
+import ru.chsu.computer_devices.repository.DeviceTypeRepository;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Service
+@RequiredArgsConstructor
+@Validated
+public class DeviceTypeService implements CrudService<DeviceTypeGrid, DeviceTypeForm, Long> {
+    private final DeviceTypeRepository deviceTypeRepository;
+    private final DeviceTypeMapper deviceTypeMapper;
+
+    @Override
+    public List<DeviceTypeGrid> findAll() {
+        return deviceTypeRepository.findAll().stream()
+                .map(deviceTypeMapper::toGrid)
+                .toList();
+    }
+
+    @Override
+    public DeviceTypeGrid findById(@NotNull Long id) {
+        return deviceTypeRepository.findById(id)
+                .map(deviceTypeMapper::toGrid)
+                .orElseThrow(() -> new ReferenceNotFoundException("Тип устройства с id: " + id + " не найден"));
+    }
+
+    @Transactional
+    @Override
+    public DeviceTypeGrid create(@Valid DeviceTypeForm form) {
+        validateTypeName(form.getTypeName());
+        DeviceType entity = deviceTypeMapper.toEntityForm(form);
+        return deviceTypeMapper.toGrid(deviceTypeRepository.save(entity));
+    }
+
+    @Transactional
+    @Override
+    public DeviceTypeGrid update(@NotNull Long id, @Valid DeviceTypeForm form) {
+        DeviceType entity = deviceTypeRepository.findById(id)
+                .orElseThrow(() -> new ReferenceNotFoundException("Тип устройства с id: " + id + " не найден"));
+        if (!entity.getTypeName().equals(form.getTypeName())) {
+            validateTypeName(form.getTypeName());
+        }
+        deviceTypeMapper.updateFromForm(form, entity);
+        return deviceTypeMapper.toGrid(deviceTypeRepository.save(entity));
+    }
+
+    @Transactional
+    @Override
+    public void delete(@NotNull Long id) {
+        if (!deviceTypeRepository.existsById(id)) {
+            throw new ReferenceNotFoundException("Тип устройства с id: " + id + " не найден");
+        }
+        deviceTypeRepository.deleteById(id);
+    }
+
+    private void validateTypeName(String typeName) {
+        if (deviceTypeRepository.findByTypeName(typeName).isPresent()) {
+            throw new ReferenceExistException("Тип устройства '" + typeName + "' уже существует");
+        }
+    }
+
+    public boolean hasDevices(Long id) {
+        DeviceType deviceType = deviceTypeRepository.findById(id)
+                .orElseThrow(() -> new ReferenceNotFoundException("Тип устройства с id: " + id + " не найден"));
+        return deviceType.getDevices() != null && !deviceType.getDevices().isEmpty();
+    }
+
+    public String getDevicesList(Long id) {
+        DeviceType deviceType = deviceTypeRepository.findById(id)
+                .orElseThrow(() -> new ReferenceNotFoundException("Тип устройства с id: " + id + " не найден"));
+        if (deviceType.getDevices() == null || deviceType.getDevices().isEmpty()) {
+            return "Нет устройств";
+        }
+        return deviceType.getDevices().stream()
+                .map(Device::getModelName)
+                .collect(Collectors.joining("\n• ", "• ", ""));
+    }
+} 
+ 
+================== FILE: C:\Users\Iluha\Desktop\devices_no_docker\src\main\java\ru\chsu\computer_devices\service\FeedbackService.java ================== 
+ 
+package ru.chsu.computer_devices.service;
+
+import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
+import ru.chsu.computer_devices.exception.DeviceNotFoundException;
+import ru.chsu.computer_devices.exception.FeedbackNotFoundException;
+import ru.chsu.computer_devices.mapper.FeedbackMapper;
+import ru.chsu.computer_devices.model.Rating;
+import ru.chsu.computer_devices.model.dto.FeedbackForm;
+import ru.chsu.computer_devices.model.dto.FeedbackGrid;
+import ru.chsu.computer_devices.model.entity.Device;
+import ru.chsu.computer_devices.model.entity.Feedback;
+import ru.chsu.computer_devices.repository.DeviceRepository;
+import ru.chsu.computer_devices.repository.FeedbackRepository;
+
+import java.util.List;
+
+@Service
+@RequiredArgsConstructor
+@Validated
+public class FeedbackService implements CrudService<FeedbackGrid, FeedbackForm, Long> {
+    private final FeedbackRepository feedbackRepository;
+    private final FeedbackMapper feedbackMapper;
+    private final DeviceRepository deviceRepository;
+
+    @Override
+    public List<FeedbackGrid> findAll() {
+        return feedbackRepository.findAll().stream()
+                .map(feedbackMapper::toGrid)
+                .toList();
+    }
+
+    @Override
+    public FeedbackGrid findById(@NotNull Long id) {
+        return feedbackRepository.findById(id)
+                .map(feedbackMapper::toGrid)
+                .orElseThrow(() -> new FeedbackNotFoundException(id));
+    }
+
+    @Transactional
+    @Override
+    public FeedbackGrid create(@Valid FeedbackForm feedbackForm) {
+        Device device = validateDeviceName(feedbackForm.getDeviceName());
+        Feedback feedback = feedbackMapper.toEntityForm(feedbackForm);
+        feedback.setDevice(device);
+        feedback.setRating(Rating.fromValue(feedbackForm.getRating()));
+        return feedbackMapper.toGrid(feedbackRepository.save(feedback));
+    }
+
+    @Transactional
+    @Override
+    public FeedbackGrid update(@NotNull Long id, @Valid FeedbackForm feedbackForm) {
+        Device device = validateDeviceName(feedbackForm.getDeviceName());
+        Feedback feedback = feedbackRepository.findById(id)
+                .orElseThrow(() -> new FeedbackNotFoundException(id));
+
+        if (!feedback.getDevice().getId().equals(device.getId())) {
+            feedback.setDevice(device);
+        }
+
+        feedbackMapper.updateFromForm(feedbackForm, feedback);
+        feedback.setRating(Rating.fromValue(feedbackForm.getRating()));
+
+        return feedbackMapper.toGrid(feedbackRepository.save(feedback));
+    }
+
+    @Transactional
+    @Override
+    public void delete(@NotNull Long id) {
+        Feedback feedback = feedbackRepository.findById(id)
+                .orElseThrow(() -> new FeedbackNotFoundException(id));
+        feedbackRepository.delete(feedback);
+    }
+
+    private Device validateDeviceName(String deviceName) {
+        return deviceRepository.findByModelName(deviceName)
+                .orElseThrow(() -> new DeviceNotFoundException("Устройство с названием: " + deviceName + " не найдено"));
+    }
+} 
+ 
+================== FILE: C:\Users\Iluha\Desktop\devices_no_docker\src\main\java\ru\chsu\computer_devices\service\ManufacturerService.java ================== 
+ 
+package ru.chsu.computer_devices.service;
+
+import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
+import ru.chsu.computer_devices.exception.ManufacturerExistException;
+import ru.chsu.computer_devices.exception.ManufacturerNotFoundException;
+import ru.chsu.computer_devices.mapper.ManufacturerMapper;
+import ru.chsu.computer_devices.model.dto.ManufacturerForm;
+import ru.chsu.computer_devices.model.dto.ManufacturerGrid;
+import ru.chsu.computer_devices.model.entity.Device;
+import ru.chsu.computer_devices.model.entity.Manufacturer;
+import ru.chsu.computer_devices.repository.ManufacturerRepository;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Service
+@RequiredArgsConstructor
+@Validated
+public class ManufacturerService implements CrudService<ManufacturerGrid, ManufacturerForm, Long> {
+    private final ManufacturerRepository manufacturerRepository;
+    private final ManufacturerMapper manufacturerMapper;
+
+    @Override
+    public List<ManufacturerGrid> findAll() {
+        return manufacturerRepository.findAll().stream()
+                .map(manufacturerMapper::toGrid)
+                .toList();
+    }
+
+    @Override
+    public ManufacturerGrid findById(@NotNull Long id) {
+        return manufacturerRepository.findById(id)
+                .map(manufacturerMapper::toGrid)
+                .orElseThrow(() -> new ManufacturerNotFoundException(id));
+    }
+
+    @Transactional
+    @Override
+    public ManufacturerGrid create(@Valid ManufacturerForm manufacturerForm) {
+        validateCompanyName(manufacturerForm.getCompanyName());
+        Manufacturer manufacturer = manufacturerMapper.toEntityForm(manufacturerForm);
+        return manufacturerMapper.toGrid(manufacturerRepository.save(manufacturer));
+    }
+
+    @Transactional
+    @Override
+    public ManufacturerGrid update(@NotNull Long id, @Valid ManufacturerForm manufacturerForm) {
+        Manufacturer manufacturer = manufacturerRepository.findById(id)
+                .orElseThrow(() -> new ManufacturerNotFoundException(id));
+        if (!manufacturer.getCompanyName().equals(manufacturerForm.getCompanyName())) {
+            validateCompanyName(manufacturerForm.getCompanyName());
+        }
+        manufacturerMapper.updateFromForm(manufacturerForm, manufacturer);
+        return manufacturerMapper.toGrid(manufacturerRepository.save(manufacturer));
+    }
+
+    @Transactional
+    @Override
+    public void delete(@NotNull Long id) {
+        Manufacturer manufacturer = manufacturerRepository.findById(id)
+                .orElseThrow(() -> new ManufacturerNotFoundException(id));
+        manufacturerRepository.delete(manufacturer);
+    }
+
+    private void validateCompanyName(String companyName) {
+        if (manufacturerRepository.existsManufacturerByCompanyName(companyName)) {
+            throw new ManufacturerExistException("Производитель с названием " + companyName + " уже существует");
+        }
+    }
+
+    public boolean hasDevices(Long id) {
+        Manufacturer manufacturer = manufacturerRepository.findById(id)
+                .orElseThrow(() -> new ManufacturerNotFoundException(id));
+        return manufacturer.getDevices() != null && !manufacturer.getDevices().isEmpty();
+    }
+
+    public String getDevicesList(Long id) {
+        Manufacturer manufacturer = manufacturerRepository.findById(id)
+                .orElseThrow(() -> new ManufacturerNotFoundException(id));
+        if (manufacturer.getDevices() == null || manufacturer.getDevices().isEmpty()) {
+            return "Нет устройств";
+        }
+        return manufacturer.getDevices().stream()
+                .map(Device::getModelName)
+                .collect(Collectors.joining("\n• ", "• ", ""));
+    }
+} 
+ 
+================== FILE: C:\Users\Iluha\Desktop\devices_no_docker\src\main\java\ru\chsu\computer_devices\ui\MainLayout.java ================== 
+ 
+package ru.chsu.computer_devices.ui;
+
+import com.vaadin.flow.component.applayout.AppLayout;
+import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.orderedlayout.Scroller;
+import com.vaadin.flow.component.sidenav.SideNav;
+import com.vaadin.flow.component.sidenav.SideNavItem;
+import com.vaadin.flow.router.Layout;
+import com.vaadin.flow.server.menu.MenuConfiguration;
+import com.vaadin.flow.server.menu.MenuEntry;
+
+@Layout
+public final class MainLayout extends AppLayout {
+
+    MainLayout() {
+        setPrimarySection(Section.DRAWER);
+        addToDrawer(createHeader(), new Scroller(createSideNav()));
+    }
+
+    private Div createHeader() {
+        var appLogo = VaadinIcon.DESKTOP.create();
+        appLogo.getStyle().set("color", "var(--lumo-primary-color)");
+        appLogo.getStyle().set("width", "32px");
+        appLogo.getStyle().set("height", "32px");
+
+        var appName = new Span("Computer Devices");
+        appName.getStyle().set("font-weight", "600");
+        appName.getStyle().set("font-size", "var(--lumo-font-size-xl)");
+
+        var header = new Div(appLogo, appName);
+        header.getStyle()
+                .set("display", "flex")
+                .set("padding", "var(--lumo-space-m)")
+                .set("gap", "var(--lumo-space-m)")
+                .set("align-items", "center");
+        return header;
+    }
+
+    private SideNav createSideNav() {
+        var nav = new SideNav();
+        nav.getStyle().set("margin", "0 var(--lumo-space-m)");
+        MenuConfiguration.getMenuEntries().forEach(entry -> nav.addItem(createSideNavItem(entry)));
+        return nav;
+    }
+
+    private SideNavItem createSideNavItem(MenuEntry menuEntry) {
+        if (menuEntry.icon() != null) {
+            return new SideNavItem(menuEntry.title(), menuEntry.path(), new Icon(menuEntry.icon()));
+        } else {
+            return new SideNavItem(menuEntry.title(), menuEntry.path());
+        }
+    }
+} 
+ 
+================== FILE: C:\Users\Iluha\Desktop\devices_no_docker\src\main\java\ru\chsu\computer_devices\ui\component\ViewToolbar.java ================== 
+ 
+package ru.chsu.computer_devices.ui.component;
+
+import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.Composite;
+import com.vaadin.flow.component.applayout.DrawerToggle;
+import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.H1;
+import com.vaadin.flow.component.html.Header;
+import com.vaadin.flow.theme.lumo.LumoUtility.*;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
+
+@NullMarked
+public final class ViewToolbar extends Composite<Header> {
+
+    public ViewToolbar(@Nullable String viewTitle, Component... components) {
+        addClassNames(Display.FLEX, FlexDirection.COLUMN, JustifyContent.BETWEEN, AlignItems.STRETCH, Gap.MEDIUM,
+                FlexDirection.Breakpoint.Medium.ROW, AlignItems.Breakpoint.Medium.CENTER);
+
+        var drawerToggle = new DrawerToggle();
+        drawerToggle.addClassNames(Margin.NONE);
+
+        var title = new H1(viewTitle);
+        title.addClassNames(FontSize.XLARGE, Margin.NONE, FontWeight.LIGHT);
+
+        var toggleAndTitle = new Div(drawerToggle, title);
+        toggleAndTitle.addClassNames(Display.FLEX, AlignItems.CENTER);
+        getContent().add(toggleAndTitle);
+
+        if (components.length > 0) {
+            var actions = new Div(components);
+            actions.addClassNames(Display.FLEX, FlexDirection.COLUMN, JustifyContent.BETWEEN, Flex.GROW, Gap.SMALL,
+                    FlexDirection.Breakpoint.Medium.ROW);
+            getContent().add(actions);
+        }
+    }
+
+    public static Component group(Component... components) {
+        var group = new Div(components);
+        group.addClassNames(Display.FLEX, FlexDirection.COLUMN, AlignItems.STRETCH, Gap.SMALL,
+                FlexDirection.Breakpoint.Medium.ROW, AlignItems.Breakpoint.Medium.CENTER);
+        return group;
+    }
+} 
+ 
+================== FILE: C:\Users\Iluha\Desktop\devices_no_docker\src\main\java\ru\chsu\computer_devices\ui\view\BaseCrudView.java ================== 
+ 
+package ru.chsu.computer_devices.ui.view;
+
+import com.vaadin.flow.component.ClickEvent;
+import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.ComponentEventListener;
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.grid.dataview.GridListDataView;
+import com.vaadin.flow.component.html.Main;
+import com.vaadin.flow.component.notification.Notification;
+import lombok.Getter;
+import ru.chsu.computer_devices.exception.ExceptionHandler;
+import ru.chsu.computer_devices.model.dto.GridAPI;
+import ru.chsu.computer_devices.service.CrudService;
+import ru.chsu.computer_devices.ui.component.ViewToolbar;
+import ru.chsu.computer_devices.ui.view.component.CrudActionToolbar;
+import ru.chsu.computer_devices.ui.view.component.CrudDialogManager;
+import ru.chsu.computer_devices.ui.view.component.DeleteDialog;
+
+public abstract class BaseCrudView<GRID extends GridAPI<ID>, FORM, ID, SERVICE extends CrudService<GRID, FORM, ID>>
+        extends Main {
+    protected Grid<GRID> grid;
+    protected GridListDataView<GRID> gridListDataView;
+    protected transient SERVICE service;
+    protected transient ExceptionHandler exceptionHandler;
+    protected transient GRID currentItem;
+
+    @Getter
+    protected boolean update;
+
+    protected CrudActionToolbar toolbar;
+    protected CrudDialogManager dialogManager;
+    private String currentDialogTitle;
+
+    protected BaseCrudView(SERVICE service, ExceptionHandler exceptionHandler) {
+        this.service = service;
+        this.exceptionHandler = exceptionHandler;
+        this.dialogManager = new CrudDialogManager();
+    }
+
+    protected abstract void openDialog(GRID selectedGrid);
+
+    protected abstract void configureGrid();
+
+    protected void refreshGrid() {
+        gridListDataView = grid.setItems(service.findAll());
+        if (toolbar != null && toolbar.getSearchTerm() != null) {
+            applyFilter();
+        }
+    }
+
+    protected boolean hasRelatedData(ID id) {
+        return false;
+    }
+
+    protected String getRelatedDataInfo(ID id) {
+        return "";
+    }
+
+    protected void deleteWithCheck() {
+        if (currentItem == null) {
+            Notification.show("Выберите запись для удаления", 3000, Notification.Position.BOTTOM_END);
+            return;
+        }
+
+        ID id = currentItem.getId();
+        String itemName = currentItem.toString();
+
+        if (hasRelatedData(id)) {
+            String relationsInfo = getRelatedDataInfo(id);
+            DeleteDialog.showWithCheck(itemName, true, relationsInfo, () -> {
+                try {
+                    service.delete(id);
+                    refreshGrid();
+                    Notification.show("Удалено", 3000, Notification.Position.BOTTOM_END);
+                } catch (Exception ex) {
+                    exceptionHandler.handleException(ex);
+                }
+            });
+        } else {
+            DeleteDialog.show(itemName, () -> {
+                try {
+                    service.delete(id);
+                    refreshGrid();
+                    Notification.show("Удалено", 3000, Notification.Position.BOTTOM_END);
+                } catch (Exception ex) {
+                    exceptionHandler.handleException(ex);
+                }
+            });
+        }
+    }
+
+    private void openCreateDialog() {
+        openDialog(null);
+    }
+
+    private void openUpdateDialog() {
+        if (currentItem != null) openDialog(currentItem);
+    }
+
+    protected void initializeUI(String title) {
+        setSizeFull();
+
+        this.grid = new Grid<>();
+        grid.setSizeFull();
+        grid.setMultiSort(true, Grid.MultiSortPriority.APPEND);
+        gridSelectedListener();
+
+        toolbar = new CrudActionToolbar(
+                this::openCreateDialog,
+                this::openUpdateDialog,
+                this::deleteWithCheck,
+                this::applyFilter);
+
+        ViewToolbar viewToolbar = new ViewToolbar(title, toolbar);
+
+        configureGrid();
+        configureGridColumns();
+
+        add(viewToolbar, grid);
+        refreshGrid();
+        configureFilter();
+    }
+
+    protected void applyFilter() {
+        if (gridListDataView != null) gridListDataView.refreshAll();
+    }
+
+    protected void configureFilter() {
+        if (gridListDataView != null) {
+            gridListDataView.addFilter(item -> {
+                String searchTerm = toolbar.getSearchTerm();
+                return item.containsSearchTerm(searchTerm);
+            });
+        }
+    }
+
+    private void configureGridColumns() {
+        grid.getColumns().forEach(column -> column.setSortable(true).setAutoWidth(true));
+    }
+
+    protected void gridSelectedListener() {
+        grid.addSelectionListener(e -> {
+            boolean hasSelection = e.getFirstSelectedItem().isPresent();
+            if (toolbar != null) toolbar.setButtonsEnabled(hasSelection);
+            currentItem = e.getFirstSelectedItem().orElse(null);
+        });
+    }
+
+    protected void startDialog(GRID selectedGrid, String titleCreate, String titleUpdate) {
+        update = (selectedGrid != null);
+        this.currentDialogTitle = update ? titleUpdate : titleCreate;
+    }
+
+    protected void configureAndRunDialog(ComponentEventListener<ClickEvent<Button>> saveButtonEvent,
+                                         ComponentEventListener<ClickEvent<Button>> cancelButtonEvent,
+                                         Component... components) {
+        dialogManager.openDialog(currentDialogTitle, saveButtonEvent, cancelButtonEvent, components);
+    }
+
+    protected void closeDialog() {
+        dialogManager.close();
+    }
+} 
+ 
+================== FILE: C:\Users\Iluha\Desktop\devices_no_docker\src\main\java\ru\chsu\computer_devices\ui\view\ConnectionTypeView.java ================== 
+ 
+package ru.chsu.computer_devices.ui.view;
+
+import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.router.Menu;
+import com.vaadin.flow.router.PageTitle;
+import com.vaadin.flow.router.Route;
+import ru.chsu.computer_devices.exception.ExceptionHandler;
+import ru.chsu.computer_devices.model.dto.ConnectionTypeForm;
+import ru.chsu.computer_devices.model.dto.ConnectionTypeGrid;
+import ru.chsu.computer_devices.service.ConnectionTypeService;
+
+import static ru.chsu.computer_devices.ui.view.factory.ComponentFactory.createTextField;
+
+@Route("connection-types")
+@PageTitle("Типы подключения")
+@Menu(order = 4, icon = "vaadin:plug", title = "Типы подключения")
+public class ConnectionTypeView extends BaseCrudView<ConnectionTypeGrid, ConnectionTypeForm, Long, ConnectionTypeService> {
+
+    public ConnectionTypeView(ConnectionTypeService connectionTypeService, ExceptionHandler exceptionHandler) {
+        super(connectionTypeService, exceptionHandler);
+        initializeUI("Типы подключения");
+    }
+
+    @Override
+    protected void configureGrid() {
+        grid.addColumn(ConnectionTypeGrid::getId).setHeader("ID");
+        grid.addColumn(ConnectionTypeGrid::getTypeName).setHeader("Тип подключения");
+        grid.addColumn(type -> {
+            if (type.getDeviceNames() == null || type.getDeviceNames().isEmpty()) {
+                return "Нет устройств";
+            }
+            return String.join(", ", type.getDeviceNames());
+        }).setHeader("Устройства");
+    }
+
+    @Override
+    protected void openDialog(ConnectionTypeGrid existingGrid) {
+        startDialog(existingGrid, "Создать тип подключения", "Изменить тип подключения");
+
+        TextField typeName = createTextField("Название типа подключения");
+
+        if (isUpdate()) {
+            typeName.setValue(existingGrid.getTypeName());
+        }
+
+        final Long id = isUpdate() ? existingGrid.getId() : null;
+
+        configureAndRunDialog(
+                e -> {
+                    try {
+                        ConnectionTypeForm form = new ConnectionTypeForm();
+                        form.setTypeName(typeName.getValue());
+
+                        if (id == null) {
+                            service.create(form);
+                            Notification.show("Тип подключения создан", 3000, Notification.Position.BOTTOM_END);
+                        } else {
+                            service.update(id, form);
+                            Notification.show("Тип подключения изменен", 3000, Notification.Position.BOTTOM_END);
+                        }
+                        refreshGrid();
+                        closeDialog();
+                    } catch (Exception ex) {
+                        exceptionHandler.handleException(ex);
+                    }
+                },
+                e -> closeDialog(),
+                typeName);
+    }
+
+    @Override
+    protected boolean hasRelatedData(Long id) {
+        return service.hasDevices(id);
+    }
+
+    @Override
+    protected String getRelatedDataInfo(Long id) {
+        return "Устройства с этим типом подключения:\n" + service.getDevicesList(id);
+    }
+} 
+ 
+================== FILE: C:\Users\Iluha\Desktop\devices_no_docker\src\main\java\ru\chsu\computer_devices\ui\view\DashboardView.java ================== 
+ 
+package ru.chsu.computer_devices.ui.view;
+
+import com.vaadin.flow.component.charts.Chart;
+import com.vaadin.flow.component.charts.model.*;
+import com.vaadin.flow.component.dashboard.Dashboard;
+import com.vaadin.flow.component.dashboard.DashboardSection;
+import com.vaadin.flow.component.dashboard.DashboardWidget;
+import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.Main;
+import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.router.Menu;
+import com.vaadin.flow.router.PageTitle;
+import com.vaadin.flow.router.Route;
+import ru.chsu.computer_devices.model.dto.DashboardStats;
+import ru.chsu.computer_devices.service.DashboardService;
+
+import java.util.Map;
+
+@Route("")
+@PageTitle("Дашборд")
+@Menu(order = -1, icon = "vaadin:dashboard", title = "Дашборд")
+public class DashboardView extends Main {
+
+    private final DashboardService dashboardService;
+
+    public DashboardView(DashboardService dashboardService) {
+        this.dashboardService = dashboardService;
+        initializeUI();
+    }
+
+    private void initializeUI() {
+        setSizeFull();
+        getStyle().set("padding", "var(--lumo-space-l)");
+
+        DashboardStats stats = dashboardService.getDashboardStats();
+
+        Dashboard dashboard = new Dashboard();
+        dashboard.setSizeFull();
+
+        DashboardSection kpiSection = dashboard.addSection("Основные метрики");
+
+        DashboardWidget manufacturersWidget = new DashboardWidget("Производители");
+        manufacturersWidget.setContent(createKpiCard("Производители", stats.getTotalManufacturers(), VaadinIcon.BUILDING));
+        kpiSection.add(manufacturersWidget);
+
+        DashboardWidget devicesWidget = new DashboardWidget("Устройства");
+        devicesWidget.setContent(createKpiCard("Устройства", stats.getTotalDevices(), VaadinIcon.GAMEPAD));
+        kpiSection.add(devicesWidget);
+
+        DashboardWidget feedbacksWidget = new DashboardWidget("Отзывы");
+        feedbacksWidget.setContent(createKpiCard("Отзывы", stats.getTotalFeedbacks(), VaadinIcon.COMMENT));
+        kpiSection.add(feedbacksWidget);
+
+        DashboardWidget ratingWidget = new DashboardWidget("Средний рейтинг");
+        ratingWidget.setContent(createKpiCard("Средний рейтинг", String.format("%.1f ★", stats.getAverageRating()), VaadinIcon.STAR));
+        kpiSection.add(ratingWidget);
+
+        DashboardSection chartsSection = dashboard.addSection("Аналитика");
+
+        DashboardWidget devicesByManufacturerWidget = new DashboardWidget("Устройства по производителям");
+        devicesByManufacturerWidget.setContent(createPieChart("Устройства по производителям", stats.getDevicesByManufacturer()));
+        chartsSection.add(devicesByManufacturerWidget);
+
+        DashboardWidget devicesByTypeWidget = new DashboardWidget("Устройства по типам");
+        devicesByTypeWidget.setContent(createPieChart("Устройства по типам", stats.getDevicesByType()));
+        chartsSection.add(devicesByTypeWidget);
+
+        DashboardWidget devicesByConnectionWidget = new DashboardWidget("Устройства по типу подключения");
+        devicesByConnectionWidget.setContent(createColumnChart("Устройства по типу подключения", stats.getDevicesByConnectionType()));
+        chartsSection.add(devicesByConnectionWidget);
+
+        DashboardWidget feedbacksByRatingWidget = new DashboardWidget("Отзывы по рейтингу");
+        feedbacksByRatingWidget.setContent(createBarChart("Отзывы по рейтингу", stats.getFeedbacksByRating()));
+        chartsSection.add(feedbacksByRatingWidget);
+
+        add(dashboard);
+    }
+
+    private Div createKpiCard(String title, Object value, VaadinIcon icon) {
+        Div card = new Div();
+        card.getStyle()
+                .set("background", "var(--lumo-contrast-5pct)")
+                .set("padding", "var(--lumo-space-l)")
+                .set("border-radius", "var(--lumo-border-radius-l)")
+                .set("display", "flex")
+                .set("flex-direction", "column")
+                .set("align-items", "center")
+                .set("gap", "var(--lumo-space-m)");
+
+        Icon cardIcon = icon.create();
+        cardIcon.getStyle()
+                .set("width", "32px")
+                .set("height", "32px")
+                .set("color", "var(--lumo-primary-color)");
+
+        Span valueSpan = new Span(String.valueOf(value));
+        valueSpan.getStyle()
+                .set("font-size", "var(--lumo-font-size-xxxl)")
+                .set("font-weight", "bold")
+                .set("color", "var(--lumo-primary-color)");
+
+        Span titleSpan = new Span(title);
+        titleSpan.getStyle()
+                .set("font-size", "var(--lumo-font-size-s)")
+                .set("color", "var(--lumo-secondary-text-color)");
+
+        card.add(cardIcon, valueSpan, titleSpan);
+        return card;
+    }
+
+    private Div createChartContainer(Chart chart) {
+        Div container = new Div();
+        container.getStyle()
+                .set("background", "var(--lumo-contrast-5pct)")
+                .set("padding", "var(--lumo-space-m)")
+                .set("border-radius", "var(--lumo-border-radius-l)");
+        chart.setWidth("100%");
+        chart.setHeight("300px");
+        container.add(chart);
+        return container;
+    }
+
+    private Div createPieChart(String title, Map<String, Long> data) {
+        Chart chart = new Chart(ChartType.PIE);
+        Configuration conf = chart.getConfiguration();
+        conf.setTitle(title);
+        DataSeries series = new DataSeries();
+        for (Map.Entry<String, Long> entry : data.entrySet()) {
+            DataSeriesItem item = new DataSeriesItem(entry.getKey(), entry.getValue());
+            series.add(item);
+        }
+        conf.addSeries(series);
+        PlotOptionsPie plotOptions = new PlotOptionsPie();
+        plotOptions.setCursor(Cursor.POINTER);
+        plotOptions.setShowInLegend(true);
+        conf.setPlotOptions(plotOptions);
+        return createChartContainer(chart);
+    }
+
+    private Div createColumnChart(String title, Map<String, Long> data) {
+        Chart chart = new Chart(ChartType.COLUMN);
+        Configuration conf = chart.getConfiguration();
+        conf.setTitle(title);
+
+        XAxis xAxis = new XAxis();
+        xAxis.setCategories(data.keySet().toArray(new String[0]));
+        conf.addxAxis(xAxis);
+
+        YAxis yAxis = new YAxis();
+        yAxis.setTitle("Количество устройств");
+        conf.addyAxis(yAxis);
+
+        DataSeries series = new DataSeries("Устройства");
+        for (Map.Entry<String, Long> entry : data.entrySet()) {
+            DataSeriesItem item = new DataSeriesItem(entry.getKey(), entry.getValue());
+            series.add(item);
+        }
+        conf.addSeries(series);
+        return createChartContainer(chart);
+    }
+
+    private Div createBarChart(String title, Map<Integer, Long> data) {
+        Chart chart = new Chart(ChartType.BAR);
+        Configuration conf = chart.getConfiguration();
+        conf.setTitle(title);
+
+        XAxis xAxis = new XAxis();
+        xAxis.setCategories(data.keySet().stream().map(i -> i + " ★").toArray(String[]::new));
+        conf.addxAxis(xAxis);
+
+        YAxis yAxis = new YAxis();
+        yAxis.setTitle("Количество отзывов");
+        conf.addyAxis(yAxis);
+
+        DataSeries series = new DataSeries("Отзывы");
+        for (Map.Entry<Integer, Long> entry : data.entrySet()) {
+            DataSeriesItem item = new DataSeriesItem(entry.getKey() + " ★", entry.getValue());
+            series.add(item);
+        }
+        conf.addSeries(series);
+        return createChartContainer(chart);
+    }
+} 
+ 
+================== FILE: C:\Users\Iluha\Desktop\devices_no_docker\src\main\java\ru\chsu\computer_devices\ui\view\DeviceTypeView.java ================== 
+ 
+package ru.chsu.computer_devices.ui.view;
+
+import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.router.Menu;
+import com.vaadin.flow.router.PageTitle;
+import com.vaadin.flow.router.Route;
+import ru.chsu.computer_devices.exception.ExceptionHandler;
+import ru.chsu.computer_devices.model.dto.DeviceTypeForm;
+import ru.chsu.computer_devices.model.dto.DeviceTypeGrid;
+import ru.chsu.computer_devices.service.DeviceTypeService;
+
+import static ru.chsu.computer_devices.ui.view.factory.ComponentFactory.createTextField;
+
+@Route("device-types")
+@PageTitle("Типы устройств")
+@Menu(order = 3, icon = "vaadin:list", title = "Типы устройств")
+public class DeviceTypeView extends BaseCrudView<DeviceTypeGrid, DeviceTypeForm, Long, DeviceTypeService> {
+
+    public DeviceTypeView(DeviceTypeService deviceTypeService, ExceptionHandler exceptionHandler) {
+        super(deviceTypeService, exceptionHandler);
+        initializeUI("Типы устройств");
+    }
+
+    @Override
+    protected void configureGrid() {
+        grid.addColumn(DeviceTypeGrid::getId).setHeader("ID");
+        grid.addColumn(DeviceTypeGrid::getTypeName).setHeader("Тип устройства");
+        grid.addColumn(type -> {
+            if (type.getDeviceNames() == null || type.getDeviceNames().isEmpty()) {
+                return "Нет устройств";
+            }
+            return String.join(", ", type.getDeviceNames());
+        }).setHeader("Устройства");
+    }
+
+    @Override
+    protected void openDialog(DeviceTypeGrid existingGrid) {
+        startDialog(existingGrid, "Создать тип устройства", "Изменить тип устройства");
+
+        TextField typeName = createTextField("Название типа устройства");
+
+        if (isUpdate()) {
+            typeName.setValue(existingGrid.getTypeName());
+        }
+
+        final Long id = isUpdate() ? existingGrid.getId() : null;
+
+        configureAndRunDialog(
+                e -> {
+                    try {
+                        DeviceTypeForm form = new DeviceTypeForm();
+                        form.setTypeName(typeName.getValue());
+
+                        if (id == null) {
+                            service.create(form);
+                            Notification.show("Тип устройства создан", 3000, Notification.Position.BOTTOM_END);
+                        } else {
+                            service.update(id, form);
+                            Notification.show("Тип устройства изменен", 3000, Notification.Position.BOTTOM_END);
+                        }
+                        refreshGrid();
+                        closeDialog();
+                    } catch (Exception ex) {
+                        exceptionHandler.handleException(ex);
+                    }
+                },
+                e -> closeDialog(),
+                typeName);
+    }
+
+    @Override
+    protected boolean hasRelatedData(Long id) {
+        return service.hasDevices(id);
+    }
+
+    @Override
+    protected String getRelatedDataInfo(Long id) {
+        return "Устройства этого типа:\n" + service.getDevicesList(id);
+    }
+} 
+ 
+================== FILE: C:\Users\Iluha\Desktop\devices_no_docker\src\main\java\ru\chsu\computer_devices\ui\view\DeviceView.java ================== 
+ 
+package ru.chsu.computer_devices.ui.view;
+
+import com.vaadin.flow.component.combobox.ComboBox;
+import com.vaadin.flow.component.datepicker.DatePicker;
+import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.router.Menu;
+import com.vaadin.flow.router.PageTitle;
+import com.vaadin.flow.router.Route;
+import ru.chsu.computer_devices.exception.ExceptionHandler;
+import ru.chsu.computer_devices.model.dto.*;
+import ru.chsu.computer_devices.service.ConnectionTypeService;
+import ru.chsu.computer_devices.service.DeviceService;
+import ru.chsu.computer_devices.service.DeviceTypeService;
+import ru.chsu.computer_devices.service.ManufacturerService;
+import ru.chsu.computer_devices.ui.view.component.DeleteDialog;
+
+import static ru.chsu.computer_devices.ui.view.factory.ComponentFactory.*;
+
+@Route("devices")
+@PageTitle("Устройства")
+@Menu(order = 1, icon = "vaadin:gamepad", title = "Устройства")
+public class DeviceView extends BaseCrudView<DeviceGrid, DeviceForm, Long, DeviceService> {
+    private final transient ManufacturerService manufacturerService;
+    private final transient DeviceTypeService deviceTypeService;
+    private final transient ConnectionTypeService connectionTypeService;
+
+    public DeviceView(DeviceService deviceService,
+                      ExceptionHandler exceptionHandler,
+                      ManufacturerService manufacturerService,
+                      DeviceTypeService deviceTypeService,
+                      ConnectionTypeService connectionTypeService) {
+        super(deviceService, exceptionHandler);
+        this.manufacturerService = manufacturerService;
+        this.deviceTypeService = deviceTypeService;
+        this.connectionTypeService = connectionTypeService;
+        initializeUI("Устройства");
+    }
+
+    @Override
+    protected void configureGrid() {
+        grid.addColumn(DeviceGrid::getId).setHeader("ID");
+        grid.addColumn(DeviceGrid::getModelName).setHeader("Модель");
+        grid.addColumn(DeviceGrid::getManufacturerName).setHeader("Производитель");
+        grid.addColumn(DeviceGrid::getDeviceTypeName).setHeader("Тип устройства");
+        grid.addColumn(DeviceGrid::getConnectionTypeName).setHeader("Тип подключения");
+        grid.addColumn(DeviceGrid::getReleaseDate).setHeader("Дата выпуска");
+        grid.addColumn(DeviceGrid::getDescription).setHeader("Описание");
+        grid.addColumn(item -> String.format("%.1f ★", item.getAverageRating())).setHeader("Рейтинг");
+    }
+
+    @Override
+    protected void openDialog(DeviceGrid existingGrid) {
+        startDialog(existingGrid, "Создать устройство", "Изменить устройство");
+
+        TextField modelName = createTextField("Название модели");
+
+        ComboBox<String> cbManufacturer = new ComboBox<>("Производитель");
+        cbManufacturer.setItems(manufacturerService.findAll().stream()
+                .map(ManufacturerGrid::getCompanyName)
+                .sorted()
+                .toList());
+        configureComboBox(cbManufacturer);
+
+        ComboBox<String> cbDeviceType = new ComboBox<>("Тип устройства");
+        cbDeviceType.setItems(deviceTypeService.findAll().stream()
+                .map(DeviceTypeGrid::getTypeName)
+                .sorted()
+                .toList());
+        configureComboBox(cbDeviceType);
+
+        ComboBox<String> cbConnectionType = new ComboBox<>("Тип подключения");
+        cbConnectionType.setItems(connectionTypeService.findAll().stream()
+                .map(ConnectionTypeGrid::getTypeName)
+                .sorted()
+                .toList());
+        configureComboBox(cbConnectionType);
+
+        DatePicker releaseDate = createDatePicker("Дата выпуска");
+        TextField description = createTextField("Описание");
+
+        if (isUpdate()) {
+            modelName.setValue(existingGrid.getModelName());
+            cbManufacturer.setValue(existingGrid.getManufacturerName());
+            cbDeviceType.setValue(existingGrid.getDeviceTypeName());
+            cbConnectionType.setValue(existingGrid.getConnectionTypeName());
+            releaseDate.setValue(existingGrid.getReleaseDate());
+            description.setValue(existingGrid.getDescription());
+        }
+
+        final Long id = isUpdate() ? existingGrid.getId() : null;
+
+        configureAndRunDialog(
+                e -> {
+                    try {
+                        DeviceForm form = new DeviceForm();
+                        form.setModelName(modelName.getValue());
+                        form.setManufacturerName(cbManufacturer.getValue());
+                        form.setDeviceTypeName(cbDeviceType.getValue());
+                        form.setConnectionTypeName(cbConnectionType.getValue());
+                        form.setReleaseDate(releaseDate.getValue());
+                        form.setDescription(description.getValue());
+
+                        if (id == null) {
+                            service.create(form);
+                            Notification.show("Устройство создано", 3000, Notification.Position.BOTTOM_END);
+                        } else {
+                            service.update(id, form);
+                            Notification.show("Устройство изменено", 3000, Notification.Position.BOTTOM_END);
+                        }
+                        refreshGrid();
+                        closeDialog();
+                    } catch (Exception ex) {
+                        exceptionHandler.handleException(ex);
+                    }
+                },
+                e -> closeDialog(),
+                modelName, cbManufacturer, cbDeviceType, cbConnectionType, releaseDate, description);
+    }
+
+    @Override
+    protected void deleteWithCheck() {
+        if (currentItem == null) {
+            Notification.show("Выберите устройство для удаления", 3000, Notification.Position.BOTTOM_END);
+            return;
+        }
+
+        Long id = currentItem.getId();
+        String deviceName = currentItem.getModelName();
+        int feedbacksCount = service.getFeedbacksCount(id);
+
+        if (feedbacksCount > 0) {
+            String feedbacksList = service.getFeedbacksList(id);
+            DeleteDialog.showDeviceDelete(deviceName, feedbacksCount, feedbacksList, () -> {
+                try {
+                    service.delete(id);
+                    refreshGrid();
+                    Notification.show("Устройство удалено", 3000, Notification.Position.BOTTOM_END);
+                } catch (Exception ex) {
+                    exceptionHandler.handleException(ex);
+                }
+            });
+        } else {
+            DeleteDialog.show(deviceName, () -> {
+                try {
+                    service.delete(id);
+                    refreshGrid();
+                    Notification.show("Устройство удалено", 3000, Notification.Position.BOTTOM_END);
+                } catch (Exception ex) {
+                    exceptionHandler.handleException(ex);
+                }
+            });
+        }
+    }
+} 
+ 
+================== FILE: C:\Users\Iluha\Desktop\devices_no_docker\src\main\java\ru\chsu\computer_devices\ui\view\FeedbackView.java ================== 
+ 
+package ru.chsu.computer_devices.ui.view;
+
+import com.vaadin.flow.component.combobox.ComboBox;
+import com.vaadin.flow.component.datepicker.DatePicker;
+import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.textfield.TextArea;
+import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.router.Menu;
+import com.vaadin.flow.router.PageTitle;
+import com.vaadin.flow.router.Route;
+import ru.chsu.computer_devices.exception.ExceptionHandler;
+import ru.chsu.computer_devices.model.Rating;
+import ru.chsu.computer_devices.model.dto.DeviceGrid;
+import ru.chsu.computer_devices.model.dto.FeedbackForm;
+import ru.chsu.computer_devices.model.dto.FeedbackGrid;
+import ru.chsu.computer_devices.service.DeviceService;
+import ru.chsu.computer_devices.service.FeedbackService;
+
+import static ru.chsu.computer_devices.ui.view.factory.ComponentFactory.*;
+
+@Route("feedbacks")
+@PageTitle("Отзывы")
+@Menu(order = 2, icon = "vaadin:comment", title = "Отзывы")
+public class FeedbackView extends BaseCrudView<FeedbackGrid, FeedbackForm, Long, FeedbackService> {
+    private final transient DeviceService deviceService;
+
+    public FeedbackView(FeedbackService feedbackService,
+                        ExceptionHandler exceptionHandler,
+                        DeviceService deviceService) {
+        super(feedbackService, exceptionHandler);
+        this.deviceService = deviceService;
+        initializeUI("Отзывы");
+    }
+
+    @Override
+    protected void configureGrid() {
+        grid.addColumn(FeedbackGrid::getId).setHeader("ID");
+        grid.addColumn(FeedbackGrid::getDeviceName).setHeader("Устройство");
+        grid.addColumn(FeedbackGrid::getAuthor).setHeader("Автор");
+        grid.addColumn(FeedbackGrid::getComment).setHeader("Комментарий");
+        grid.addColumn(item -> item.getRating().getStars()).setHeader("Рейтинг");
+        grid.addColumn(FeedbackGrid::getDate).setHeader("Дата");
+    }
+
+    @Override
+    protected void openDialog(FeedbackGrid existingGrid) {
+        startDialog(existingGrid, "Создать отзыв", "Изменить отзыв");
+
+        ComboBox<String> cbDevice = new ComboBox<>("Устройство");
+        cbDevice.setItems(deviceService.findAll().stream()
+                .map(DeviceGrid::getModelName)
+                .sorted()
+                .toList());
+        configureComboBox(cbDevice);
+
+        TextField author = createTextField("Автор");
+        TextArea comment = new TextArea("Комментарий");
+        comment.setWidthFull();
+        comment.setRequired(true);
+        comment.setHeight("150px");
+
+        ComboBox<Rating> cbRating = new ComboBox<>("Рейтинг");
+        cbRating.setItems(Rating.values());
+        cbRating.setItemLabelGenerator(Rating::getStars);
+        configureComboBox(cbRating);
+
+        DatePicker date = createDatePicker("Дата");
+
+        if (isUpdate()) {
+            cbDevice.setValue(existingGrid.getDeviceName());
+            author.setValue(existingGrid.getAuthor());
+            comment.setValue(existingGrid.getComment());
+            cbRating.setValue(existingGrid.getRating());
+            date.setValue(existingGrid.getDate());
+        }
+
+        final Long id = isUpdate() ? existingGrid.getId() : null;
+
+        configureAndRunDialog(
+                e -> {
+                    try {
+                        FeedbackForm form = new FeedbackForm();
+                        form.setDeviceName(cbDevice.getValue());
+                        form.setAuthor(author.getValue());
+                        form.setComment(comment.getValue());
+                        form.setRating(cbRating.getValue().getValue());
+                        form.setDate(date.getValue());
+
+                        if (id == null) {
+                            service.create(form);
+                            Notification.show("Отзыв создан", 3000, Notification.Position.BOTTOM_END);
+                        } else {
+                            service.update(id, form);
+                            Notification.show("Отзыв изменен", 3000, Notification.Position.BOTTOM_END);
+                        }
+                        refreshGrid();
+                        closeDialog();
+                    } catch (Exception ex) {
+                        exceptionHandler.handleException(ex);
+                    }
+                },
+                e -> closeDialog(),
+                cbDevice, author, comment, cbRating, date);
+    }
+} 
+ 
+================== FILE: C:\Users\Iluha\Desktop\devices_no_docker\src\main\java\ru\chsu\computer_devices\ui\view\ManufacturerView.java ================== 
+ 
+package ru.chsu.computer_devices.ui.view;
+
+import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.router.Menu;
+import com.vaadin.flow.router.PageTitle;
+import com.vaadin.flow.router.Route;
+import ru.chsu.computer_devices.exception.ExceptionHandler;
+import ru.chsu.computer_devices.model.dto.ManufacturerForm;
+import ru.chsu.computer_devices.model.dto.ManufacturerGrid;
+import ru.chsu.computer_devices.service.ManufacturerService;
+
+import static ru.chsu.computer_devices.ui.view.factory.ComponentFactory.createTextField;
+
+@Route("manufacturers")
+@PageTitle("Производители")
+@Menu(order = 0, icon = "vaadin:factory", title = "Производители")
+public class ManufacturerView extends BaseCrudView<ManufacturerGrid, ManufacturerForm, Long, ManufacturerService> {
+
+    public ManufacturerView(ManufacturerService manufacturerService, ExceptionHandler exceptionHandler) {
+        super(manufacturerService, exceptionHandler);
+        initializeUI("Производители");
+    }
+
+    @Override
+    protected void configureGrid() {
+        grid.addColumn(ManufacturerGrid::getId).setHeader("ID");
+        grid.addColumn(ManufacturerGrid::getCompanyName).setHeader("Название компании");
+        grid.addColumn(ManufacturerGrid::getDescription).setHeader("Описание");
+        grid.addColumn(manufacturer -> {
+            if (manufacturer.getDeviceNames() == null || manufacturer.getDeviceNames().isEmpty()) {
+                return "Нет устройств";
+            }
+            return String.join(", ", manufacturer.getDeviceNames());
+        }).setHeader("Устройства");
+    }
+
+    @Override
+    protected void openDialog(ManufacturerGrid existingGrid) {
+        startDialog(existingGrid, "Создать производителя", "Изменить производителя");
+
+        TextField companyNameField = createTextField("Название компании");
+        TextField description = createTextField("Описание компании");
+
+        if (isUpdate()) {
+            companyNameField.setValue(existingGrid.getCompanyName());
+            description.setValue(existingGrid.getDescription());
+        }
+
+        final Long id = isUpdate() ? existingGrid.getId() : null;
+
+        configureAndRunDialog(
+                e -> {
+                    try {
+                        ManufacturerForm form = new ManufacturerForm();
+                        form.setCompanyName(companyNameField.getValue());
+                        form.setDescription(description.getValue());
+
+                        if (id == null) {
+                            service.create(form);
+                            Notification.show("Производитель создан", 3000, Notification.Position.BOTTOM_END);
+                        } else {
+                            service.update(id, form);
+                            Notification.show("Производитель изменен", 3000, Notification.Position.BOTTOM_END);
+                        }
+                        refreshGrid();
+                        closeDialog();
+                    } catch (Exception ex) {
+                        exceptionHandler.handleException(ex);
+                    }
+                },
+                e -> closeDialog(),
+                companyNameField, description);
+    }
+
+    @Override
+    protected boolean hasRelatedData(Long id) {
+        return service.hasDevices(id);
+    }
+
+    @Override
+    protected String getRelatedDataInfo(Long id) {
+        return "Устройства этого производителя:\n" + service.getDevicesList(id);
+    }
+} 
+ 
+================== FILE: C:\Users\Iluha\Desktop\devices_no_docker\src\main\java\ru\chsu\computer_devices\ui\view\component\CrudActionToolbar.java ================== 
+ 
+package ru.chsu.computer_devices.ui.view.component;
+
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.orderedlayout.FlexComponent;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.textfield.TextField;
+
+import static ru.chsu.computer_devices.ui.view.factory.ComponentFactory.createSearchField;
+
+public class CrudActionToolbar extends HorizontalLayout {
+    private final TextField searchField;
+    private final Button createButton;
+    private final Button updateButton;
+    private final Button deleteButton;
+
+    public CrudActionToolbar(Runnable onCreate, Runnable onUpdate, Runnable onDelete, Runnable onSearch) {
+        this.searchField = createSearchField(onSearch);
+        this.createButton = new Button("Создать", VaadinIcon.PLUS.create(), e -> onCreate.run());
+        this.updateButton = new Button("Изменить", VaadinIcon.EDIT.create(), e -> onUpdate.run());
+        this.deleteButton = new Button("Удалить", VaadinIcon.TRASH.create(), e -> onDelete.run());
+
+        setButtonsEnabled(false);
+        add(searchField, createButton, updateButton, deleteButton);
+        setAlignItems(FlexComponent.Alignment.CENTER);
+        setSpacing(true);
+    }
+
+    public void setButtonsEnabled(boolean enabled) {
+        updateButton.setEnabled(enabled);
+        deleteButton.setEnabled(enabled);
+    }
+
+    public String getSearchTerm() {
+        return searchField.getValue().trim();
+    }
+} 
+ 
+================== FILE: C:\Users\Iluha\Desktop\devices_no_docker\src\main\java\ru\chsu\computer_devices\ui\view\component\CrudDialogManager.java ================== 
+ 
+package ru.chsu.computer_devices.ui.view.component;
+
+import com.vaadin.flow.component.ClickEvent;
+import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.ComponentEventListener;
+import com.vaadin.flow.component.Focusable;
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.dialog.Dialog;
+import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.orderedlayout.FlexComponent;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+
+public class CrudDialogManager {
+    private Dialog dialog;
+
+    public void openDialog(String title,
+                           ComponentEventListener<ClickEvent<Button>> saveListener,
+                           ComponentEventListener<ClickEvent<Button>> cancelListener,
+                           Component... components) {
+        dialog = new Dialog();
+        dialog.setHeaderTitle(title);
+
+        Button saveButton = new Button("Сохранить", VaadinIcon.PLUS.create(), saveListener);
+        Button cancelButton = new Button("Отмена", VaadinIcon.CLOSE.create(), cancelListener);
+
+        HorizontalLayout buttons = new HorizontalLayout(saveButton, cancelButton);
+        buttons.setJustifyContentMode(FlexComponent.JustifyContentMode.END);
+
+        VerticalLayout dialogField = new VerticalLayout(components);
+        dialogField.setMargin(false);
+        dialogField.setSpacing(true);
+        dialogField.setPadding(false);
+
+        VerticalLayout content = new VerticalLayout(dialogField, buttons);
+        content.setMargin(false);
+        content.setSpacing(true);
+        content.setPadding(false);
+
+        dialog.add(content);
+        dialog.setMaxWidth("800px");
+        dialog.setWidth("auto");
+        dialog.open();
+
+        if (components.length > 0 && components[0] instanceof Focusable<?> focusable) {
+            focusable.focus();
+        }
+    }
+
+    public void close() {
+        if (dialog != null) dialog.close();
+    }
+} 
+ 
+================== FILE: C:\Users\Iluha\Desktop\devices_no_docker\src\main\java\ru\chsu\computer_devices\ui\view\component\DeleteDialog.java ================== 
+ 
+package ru.chsu.computer_devices.ui.view.component;
+
+import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
+import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.H4;
+import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+
+public class DeleteDialog {
+
+    public static void show(String itemName, Runnable onConfirm) {
+        ConfirmDialog confirmDialog = new ConfirmDialog();
+        confirmDialog.setHeader("Подтверждение удаления");
+        confirmDialog.setText("Вы уверены, что хотите удалить \"" + itemName + "\"?");
+        confirmDialog.setCancelable(true);
+        confirmDialog.setCancelText("Отмена");
+        confirmDialog.setConfirmText("Удалить");
+        confirmDialog.setConfirmButtonTheme("error primary");
+        confirmDialog.addConfirmListener(e -> onConfirm.run());
+        confirmDialog.open();
+    }
+
+    public static void showWithCheck(String itemName, boolean hasRelations, String relationsInfo, Runnable onConfirm) {
+        if (!hasRelations) {
+            show(itemName, onConfirm);
+            return;
+        }
+
+        ConfirmDialog confirmDialog = new ConfirmDialog();
+        confirmDialog.setHeader("Удаление с зависимостями");
+
+        VerticalLayout content = new VerticalLayout();
+        content.setSpacing(true);
+        content.setPadding(false);
+
+        Span warningSpan = new Span("Удаление затронет связанные данные:");
+        warningSpan.getStyle().set("color", "var(--lumo-error-text-color)");
+        warningSpan.getStyle().set("font-weight", "bold");
+
+        Div relationsDiv = new Div();
+        relationsDiv.setText(relationsInfo);
+        relationsDiv.getStyle().set("background", "var(--lumo-contrast-5pct)");
+        relationsDiv.getStyle().set("padding", "var(--lumo-space-m)");
+        relationsDiv.getStyle().set("border-radius", "var(--lumo-border-radius-m)");
+        relationsDiv.getStyle().set("font-family", "monospace");
+        relationsDiv.getStyle().set("font-size", "var(--lumo-font-size-s)");
+        relationsDiv.getStyle().set("white-space", "pre-wrap");
+
+        Span confirmWarning = new Span("Вы уверены, что хотите продолжить? Это действие нельзя отменить.");
+        confirmWarning.getStyle().set("color", "var(--lumo-error-text-color)");
+
+        content.add(warningSpan, relationsDiv, confirmWarning);
+
+        confirmDialog.add(content);
+        confirmDialog.setConfirmText("Удалить всё равно");
+        confirmDialog.setConfirmButtonTheme("error primary");
+        confirmDialog.setCancelable(true);
+        confirmDialog.setCancelText("Отмена");
+
+        confirmDialog.addConfirmListener(e -> onConfirm.run());
+        confirmDialog.open();
+    }
+
+    public static void showDeviceDelete(String deviceName, int feedbacksCount, String feedbacksPreview, Runnable onConfirm) {
+        ConfirmDialog confirmDialog = new ConfirmDialog();
+        confirmDialog.setHeader("Удаление устройства");
+
+        VerticalLayout content = new VerticalLayout();
+        content.setSpacing(true);
+        content.setPadding(false);
+
+        Span deviceSpan = new Span("Устройство: " + deviceName);
+        deviceSpan.getStyle().set("font-weight", "bold");
+
+        Span countSpan = new Span("Количество отзывов: " + feedbacksCount);
+
+        Div feedbacksDiv = new Div();
+        if (feedbacksCount > 0) {
+            feedbacksDiv.add(new H4("Отзывы:"));
+            Span previewSpan = new Span(feedbacksPreview);
+            previewSpan.getStyle().set("font-size", "var(--lumo-font-size-s)");
+            previewSpan.getStyle().set("white-space", "pre-wrap");
+            feedbacksDiv.add(previewSpan);
+            feedbacksDiv.getStyle().set("background", "var(--lumo-contrast-5pct)");
+            feedbacksDiv.getStyle().set("padding", "var(--lumo-space-m)");
+            feedbacksDiv.getStyle().set("border-radius", "var(--lumo-border-radius-m)");
+        }
+
+        Span warning = new Span("Все отзывы об этом устройстве будут удалены!");
+        warning.getStyle().set("color", "var(--lumo-error-text-color)");
+        warning.getStyle().set("font-weight", "bold");
+
+        Span confirmWarning = new Span("Продолжить удаление?");
+        confirmWarning.getStyle().set("color", "var(--lumo-error-text-color)");
+
+        content.add(deviceSpan, countSpan);
+        if (feedbacksCount > 0) {
+            content.add(feedbacksDiv);
+        }
+        content.add(warning, confirmWarning);
+
+        confirmDialog.add(content);
+        confirmDialog.setConfirmText("Удалить устройство и отзывы");
+        confirmDialog.setConfirmButtonTheme("error primary");
+        confirmDialog.setCancelable(true);
+        confirmDialog.setCancelText("Отмена");
+
+        confirmDialog.addConfirmListener(e -> onConfirm.run());
+        confirmDialog.open();
+    }
+} 
+ 
+================== FILE: C:\Users\Iluha\Desktop\devices_no_docker\src\main\java\ru\chsu\computer_devices\ui\view\factory\ComponentFactory.java ================== 
+ 
+package ru.chsu.computer_devices.ui.view.factory;
+
+import com.vaadin.flow.component.combobox.ComboBox;
+import com.vaadin.flow.component.datepicker.DatePicker;
+import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.textfield.NumberField;
+import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.value.ValueChangeMode;
+
+import java.time.LocalDate;
+
+public class ComponentFactory {
+
+    public static DatePicker createDatePicker(String title) {
+        DatePicker datePicker = new DatePicker(title);
+        datePicker.setRequired(true);
+        datePicker.setPlaceholder("Выберите дату...");
+        datePicker.setWidthFull();
+        datePicker.setMax(LocalDate.now());
+        datePicker.setI18n(new DatePicker.DatePickerI18n()
+                .setBadInputErrorMessage("Неверный формат даты")
+                .setRequiredErrorMessage("Обязательное поле")
+                .setMaxErrorMessage("Дата не может быть в будущем"));
+        return datePicker;
+    }
+
+    public static TextField createTextField(String text) {
+        TextField textField = new TextField(text);
+        textField.setRequired(true);
+        textField.setErrorMessage("Обязательное поле");
+        textField.setWidthFull();
+        textField.setPlaceholder("Введите " + text.toLowerCase() + "...");
+        return textField;
+    }
+
+    public static NumberField createNumberField(String text, String prefix) {
+        NumberField numberField = new NumberField(text);
+        numberField.setStep(1.0);
+        numberField.setMin(1.0);
+        numberField.setMax(5.0);
+        numberField.setStepButtonsVisible(true);
+        numberField.setClearButtonVisible(true);
+        numberField.setRequired(true);
+        numberField.setErrorMessage("Обязательное поле");
+        numberField.setWidthFull();
+        Div prefixDiv = new Div();
+        prefixDiv.setText(prefix);
+        numberField.setPrefixComponent(prefixDiv);
+        return numberField;
+    }
+
+    public static void configureComboBox(ComboBox<?> comboBox) {
+        comboBox.setErrorMessage("Обязательное поле");
+        comboBox.setRequired(true);
+        comboBox.setPlaceholder("Выберите...");
+        comboBox.setWidthFull();
+        comboBox.focus();
+    }
+
+    public static TextField createSearchField(Runnable onSearch) {
+        TextField field = new TextField();
+        field.setWidth("300px");
+        field.setPlaceholder("Поиск...");
+        field.setPrefixComponent(new Icon(VaadinIcon.SEARCH));
+        field.setClearButtonVisible(true);
+        field.setValueChangeMode(ValueChangeMode.EAGER);
+        field.addValueChangeListener(e -> onSearch.run());
+        return field;
+    }
+} 
+ 
+================== FILE: C:\Users\Iluha\Desktop\devices_no_docker\src\main\resources\application.yaml ================== 
+ 
+server:
+  port: 8080
+spring:
+  application:
+    name: Devices
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/devices
+    username: postgres
+    password: root
+
+  liquibase:
+    change-log: classpath:/db/changelog/db.changelog-master.yaml
+
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: none
+
+vaadin:
+  launch-browser: true
+ 
+ 
+================== FILE: C:\Users\Iluha\Desktop\devices_no_docker\src\main\resources\db\changelog\db.changelog-master.yaml ================== 
+ 
+databaseChangeLog:
+  - includeAll:
+      path: db/changelog/2026/03/create
+  - includeAll:
+      path: db/changelog/2026/03/constraints
+  - include:
+      file: db/changelog/2026/03/insert/insert_manufacturer.yml
+  - include:
+      file: db/changelog/2026/03/insert/insert_device_type.yml
+  - include:
+      file: db/changelog/2026/03/insert/insert_connection_type.yml
+  - include:
+      file: db/changelog/2026/03/insert/insert_device.yml
+  - include:
+      file: db/changelog/2026/03/insert/insert_feedback.yml 
+ 
+================== FILE: C:\Users\Iluha\Desktop\devices_no_docker\src\main\resources\db\changelog\2026\03\constraints\foreignkey\fk_device_connection_type.yml ================== 
+ 
+databaseChangeLog:
+  - changeSet:
+      id: fk_device_connection_type
+      author: ilya
+      changes:
+        - addForeignKeyConstraint:
+            baseTableName: device
+            baseColumnNames: connection_type_id
+            referencedTableName: connection_type
+            referencedColumnNames: id
+            onDelete: CASCADE
+            constraintName: fk_device_connection_type 
+ 
+================== FILE: C:\Users\Iluha\Desktop\devices_no_docker\src\main\resources\db\changelog\2026\03\constraints\foreignkey\fk_device_device_type.yml ================== 
+ 
+databaseChangeLog:
+  - changeSet:
+      id: fk_device_device_type
+      author: ilya
+      changes:
+        - addForeignKeyConstraint:
+            baseTableName: device
+            baseColumnNames: device_type_id
+            referencedTableName: device_type
+            referencedColumnNames: id
+            onDelete: CASCADE
+            constraintName: fk_device_device_type 
+ 
+================== FILE: C:\Users\Iluha\Desktop\devices_no_docker\src\main\resources\db\changelog\2026\03\constraints\foreignkey\fk_device_manufacturer.yml ================== 
+ 
+databaseChangeLog:
+  - changeSet:
+      id: fk_device_manufacturer
+      author: ilya
+      changes:
+        - addForeignKeyConstraint:
+            baseTableName: device
+            baseColumnNames: manufacturer_id
+            referencedTableName: manufacturer
+            referencedColumnNames: id
+            onDelete: CASCADE
+            constraintName: fk_device_manufacturer 
+ 
+================== FILE: C:\Users\Iluha\Desktop\devices_no_docker\src\main\resources\db\changelog\2026\03\constraints\foreignkey\fk_feedback_device.yml ================== 
+ 
+databaseChangeLog:
+  - changeSet:
+      id: fk_feedback_device
+      author: ilya
+      changes:
+        - addForeignKeyConstraint:
+            baseTableName: feedback
+            baseColumnNames: device_id
+            referencedTableName: device
+            referencedColumnNames: id
+            onDelete: CASCADE
+            constraintName: fk_feedback_device 
+ 
+================== FILE: C:\Users\Iluha\Desktop\devices_no_docker\src\main\resources\db\changelog\2026\03\constraints\unique\uq_connection_type_name.yml ================== 
+ 
+databaseChangeLog:
+  - changeSet:
+      id: uq_connection_type_name
+      author: ilya
+      changes:
+        - addUniqueConstraint:
+            tableName: connection_type
+            columnNames: type_name
+            constraintName: uq_connection_type_name 
+ 
+================== FILE: C:\Users\Iluha\Desktop\devices_no_docker\src\main\resources\db\changelog\2026\03\constraints\unique\uq_device_type_name.yml ================== 
+ 
+databaseChangeLog:
+  - changeSet:
+      id: uq_device_type_name
+      author: ilya
+      changes:
+        - addUniqueConstraint:
+            tableName: device_type
+            columnNames: type_name
+            constraintName: uq_device_type_name 
+ 
+================== FILE: C:\Users\Iluha\Desktop\devices_no_docker\src\main\resources\db\changelog\2026\03\create\create_connection_type.yml ================== 
+ 
+databaseChangeLog:
+  - changeSet:
+      id: create_connection_type
+      author: ilya
+      changes:
+        - createTable:
+            tableName: connection_type
+            remarks: "Тип подключения"
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+                  remarks: "Первичный ключ"
+              - column:
+                  name: type_name
+                  type: VARCHAR(50)
+                  remarks: "Название типа" 
+ 
+================== FILE: C:\Users\Iluha\Desktop\devices_no_docker\src\main\resources\db\changelog\2026\03\create\create_device.yml ================== 
+ 
+databaseChangeLog:
+  - changeSet:
+      id: create_device
+      author: ilya
+      changes:
+        - createTable:
+            tableName: device
+            remarks: "Устройства"
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+                  remarks: "Первичный ключ"
+              - column:
+                  name: model_name
+                  type: VARCHAR(50)
+                  remarks: "Название модели"
+              - column:
+                  name: manufacturer_id
+                  type: BIGINT
+                  remarks: "Производитель (FK -> Manufacturer)"
+              - column:
+                  name: device_type_id
+                  type: BIGINT
+                  remarks: "Тип устройства (FK -> DeviceType)"
+              - column:
+                  name: connection_type_id
+                  type: BIGINT
+                  remarks: "Тип подключения (FK -> ConnectionType)"
+              - column:
+                  name: release_date
+                  type: DATE
+                  remarks: "Дата выпуска"
+              - column:
+                  name: description
+                  type: TEXT
+                  remarks: "Описание устройства" 
+ 
+================== FILE: C:\Users\Iluha\Desktop\devices_no_docker\src\main\resources\db\changelog\2026\03\create\create_device_type.yml ================== 
+ 
+databaseChangeLog:
+  - changeSet:
+      id: create_device_type
+      author: ilya
+      changes:
+        - createTable:
+            tableName: device_type
+            remarks: "Тип устройства"
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+                  remarks: "Первичный ключ"
+              - column:
+                  name: type_name
+                  type: VARCHAR(50)
+                  remarks: "Название типа" 
+ 
+================== FILE: C:\Users\Iluha\Desktop\devices_no_docker\src\main\resources\db\changelog\2026\03\create\create_feedback.yml ================== 
+ 
+databaseChangeLog:
+  - changeSet:
+      id: create_feedback
+      author: ilya
+      changes:
+        - createTable:
+            tableName: feedback
+            remarks: "Отзыв"
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+                  remarks: "Первичный ключ"
+              - column:
+                  name: device_id
+                  type: BIGINT
+                  remarks: "Устройство (FK -> Device)"
+              - column:
+                  name: author
+                  type: VARCHAR(50)
+                  remarks: "Автор"
+              - column:
+                  name: comment
+                  type: TEXT
+                  remarks: "Комментарий"
+              - column:
+                  name: rating
+                  type: INT
+                  remarks: "Рейтинг (1-5)"
+              - column:
+                  name: date
+                  type: DATE
+                  remarks: "Дата"
+ 
+ 
+================== FILE: C:\Users\Iluha\Desktop\devices_no_docker\src\main\resources\db\changelog\2026\03\create\create_manufacturer.yml ================== 
+ 
+databaseChangeLog:
+  - changeSet:
+      id: create_manufacturer
+      author: ilya
+      changes:
+        - createTable:
+            tableName: manufacturer
+            remarks: "Производитель"
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+                  remarks: "Первичный ключ"
+              - column:
+                  name: company_name
+                  type: VARCHAR(50)
+                  remarks: "Юридическое название компании"
+              - column:
+                  name: description
+                  type: TEXT
+                  remarks: "Описание компании" 
+ 
+================== FILE: C:\Users\Iluha\Desktop\devices_no_docker\src\main\resources\db\changelog\2026\03\insert\insert_connection_type.yml ================== 
+ 
+databaseChangeLog:
+  - changeSet:
+      id: insert_connection_type_seed
+      author: ilya
+      changes:
+        - insert: { tableName: connection_type, columns: [ { column: { name: type_name, value: "USB" } } ] }
+        - insert: { tableName: connection_type, columns: [ { column: { name: type_name, value: "Bluetooth" } } ] }
+        - insert: { tableName: connection_type, columns: [ { column: { name: type_name, value: "2.4 GHz" } } ] }
+        - insert: { tableName: connection_type, columns: [ { column: { name: type_name, value: "PS/2" } } ] }
+        - insert: { tableName: connection_type, columns: [ { column: { name: type_name, value: "USB-C" } } ] } 
+ 
+================== FILE: C:\Users\Iluha\Desktop\devices_no_docker\src\main\resources\db\changelog\2026\03\insert\insert_device.yml ================== 
+ 
+databaseChangeLog:
+  - changeSet:
+      id: insert_device_seed
+      author: ilya
+      changes:
+        - insert:
+            tableName: device
+            columns:
+              - column: { name: model_name, value: "MX Master 3S" }
+              - column: { name: manufacturer_id, valueComputed: "(SELECT id FROM manufacturer WHERE company_name = 'Logitech')" }
+              - column: { name: device_type_id, valueComputed: "(SELECT id FROM device_type WHERE type_name = 'Мышь')" }
+              - column: { name: connection_type_id, valueComputed: "(SELECT id FROM connection_type WHERE type_name = 'Bluetooth')" }
+              - column: { name: release_date, valueDate: "2022-06-01" }
+              - column: { name: description, value: "Беспроводная мышь с бесшумными колесиками" }
+        - insert:
+            tableName: device
+            columns:
+              - column: { name: model_name, value: "Razer DeathAdder V3" }
+              - column: { name: manufacturer_id, valueComputed: "(SELECT id FROM manufacturer WHERE company_name = 'Razer')" }
+              - column: { name: device_type_id, valueComputed: "(SELECT id FROM device_type WHERE type_name = 'Мышь')" }
+              - column: { name: connection_type_id, valueComputed: "(SELECT id FROM connection_type WHERE type_name = 'USB')" }
+              - column: { name: release_date, valueDate: "2022-08-15" }
+              - column: { name: description, value: "Игровая мышь с оптическим сенсором" }
+        - insert:
+            tableName: device
+            columns:
+              - column: { name: model_name, value: "Corsair K100 RGB" }
+              - column: { name: manufacturer_id, valueComputed: "(SELECT id FROM manufacturer WHERE company_name = 'Corsair')" }
+              - column: { name: device_type_id, valueComputed: "(SELECT id FROM device_type WHERE type_name = 'Клавиатура')" }
+              - column: { name: connection_type_id, valueComputed: "(SELECT id FROM connection_type WHERE type_name = 'USB')" }
+              - column: { name: release_date, valueDate: "2021-09-01" }
+              - column: { name: description, value: "Механическая клавиатура с оптическими переключателями" } 
+ 
+================== FILE: C:\Users\Iluha\Desktop\devices_no_docker\src\main\resources\db\changelog\2026\03\insert\insert_device_type.yml ================== 
+ 
+databaseChangeLog:
+  - changeSet:
+      id: insert_device_type_seed
+      author: ilya
+      changes:
+        - insert: { tableName: device_type, columns: [ { column: { name: type_name, value: "Мышь" } } ] }
+        - insert: { tableName: device_type, columns: [ { column: { name: type_name, value: "Клавиатура" } } ] }
+        - insert: { tableName: device_type, columns: [ { column: { name: type_name, value: "Геймпад" } } ] }
+        - insert: { tableName: device_type, columns: [ { column: { name: type_name, value: "Джойстик" } } ] }
+        - insert: { tableName: device_type, columns: [ { column: { name: type_name, value: "Руль" } } ] } 
+ 
+================== FILE: C:\Users\Iluha\Desktop\devices_no_docker\src\main\resources\db\changelog\2026\03\insert\insert_feedback.yml ================== 
+ 
+databaseChangeLog:
+  - changeSet:
+      id: insert_feedback_seed
+      author: ilya
+      changes:
+        - insert:
+            tableName: feedback
+            columns:
+              - column: { name: device_id, valueComputed: "(SELECT id FROM device WHERE model_name = 'MX Master 3S')" }
+              - column: { name: author, value: "Иван" }
+              - column: { name: comment, value: "Отличная мышь для работы" }
+              - column: { name: rating, valueNumeric: 5 }
+              - column: { name: date, valueDate: "2024-01-15" }
+        - insert:
+            tableName: feedback
+            columns:
+              - column: { name: device_id, valueComputed: "(SELECT id FROM device WHERE model_name = 'Razer DeathAdder V3')" }
+              - column: { name: author, value: "Петр" }
+              - column: { name: comment, value: "Лучшая мышь для игр" }
+              - column: { name: rating, valueNumeric: 5 }
+              - column: { name: date, valueDate: "2024-02-20" } 
+ 
+================== FILE: C:\Users\Iluha\Desktop\devices_no_docker\src\main\resources\db\changelog\2026\03\insert\insert_manufacturer.yml ================== 
+ 
+databaseChangeLog:
+  - changeSet:
+      id: insert_manufacturer_seed
+      author: ilya
+      changes:
+        - insert:
+            tableName: manufacturer
+            columns:
+              - column: { name: company_name, value: "Logitech" }
+              - column: { name: description, value: "Швейцарский производитель компьютерной периферии" }
+        - insert:
+            tableName: manufacturer
+            columns:
+              - column: { name: company_name, value: "Razer" }
+              - column: { name: description, value: "Производитель игровой периферии" }
+        - insert:
+            tableName: manufacturer
+            columns:
+              - column: { name: company_name, value: "Corsair" }
+              - column: { name: description, value: "Производитель компонентов и периферии для ПК" }
+        - insert:
+            tableName: manufacturer
+            columns:
+              - column: { name: company_name, value: "Microsoft" }
+              - column: { name: description, value: "Производитель мышей, клавиатур и других устройств" }
+        - insert:
+            tableName: manufacturer
+            columns:
+              - column: { name: company_name, value: "HyperX" }
+              - column: { name: description, value: "Бренд игровой периферии" } 
+ 
+============================================ 
+КОНЕЦ СБОРКИ 
+============================================ 

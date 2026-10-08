@@ -1,0 +1,12 @@
+databaseChangeLog:
+  - changeSet:
+      id: fk_feedback_device
+      author: ilya
+      changes:
+        - addForeignKeyConstraint:
+            baseTableName: feedback
+            baseColumnNames: device_id
+            referencedTableName: device
+            referencedColumnNames: id
+            onDelete: CASCADE
+            constraintName: fk_feedback_device

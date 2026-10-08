@@ -1,0 +1,35 @@
+databaseChangeLog:
+  - changeSet:
+      id: create_feedback
+      author: ilya
+      changes:
+        - createTable:
+            tableName: feedback
+            remarks: "Отзыв"
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+                  remarks: "Первичный ключ"
+              - column:
+                  name: device_id
+                  type: BIGINT
+                  remarks: "Устройство (FK -> Device)"
+              - column:
+                  name: author
+                  type: VARCHAR(50)
+                  remarks: "Автор"
+              - column:
+                  name: comment
+                  type: TEXT
+                  remarks: "Комментарий"
+              - column:
+                  name: rating
+                  type: INT
+                  remarks: "Рейтинг (1-5)"
+              - column:
+                  name: date
+                  type: DATE
+                  remarks: "Дата"

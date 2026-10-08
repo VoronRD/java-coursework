@@ -1,0 +1,21 @@
+server:
+  port: 8080
+spring:
+  application:
+    name: Devices
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/devices
+    username: postgres
+    password: 12345
+
+  liquibase:
+    change-log: classpath:/db/changelog/db.changelog-master.yaml
+
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: none
+
+vaadin:
+  launch-browser: true

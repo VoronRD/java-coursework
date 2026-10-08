@@ -1,0 +1,21 @@
+databaseChangeLog:
+  - changeSet:
+      id: insert_feedback_seed
+      author: ilya
+      changes:
+        - insert:
+            tableName: feedback
+            columns:
+              - column: { name: device_id, valueComputed: "(SELECT id FROM device WHERE model_name = 'MX Master 3S')" }
+              - column: { name: author, value: "Иван" }
+              - column: { name: comment, value: "Отличная мышь для работы" }
+              - column: { name: rating, valueNumeric: 5 }
+              - column: { name: date, valueDate: "2024-01-15" }
+        - insert:
+            tableName: feedback
+            columns:
+              - column: { name: device_id, valueComputed: "(SELECT id FROM device WHERE model_name = 'Razer DeathAdder V3')" }
+              - column: { name: author, value: "Петр" }
+              - column: { name: comment, value: "Лучшая мышь для игр" }
+              - column: { name: rating, valueNumeric: 5 }
+              - column: { name: date, valueDate: "2024-02-20" }

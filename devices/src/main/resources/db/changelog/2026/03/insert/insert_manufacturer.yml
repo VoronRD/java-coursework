@@ -1,0 +1,30 @@
+databaseChangeLog:
+  - changeSet:
+      id: insert_manufacturer_seed
+      author: ilya
+      changes:
+        - insert:
+            tableName: manufacturer
+            columns:
+              - column: { name: company_name, value: "Logitech" }
+              - column: { name: description, value: "Швейцарский производитель компьютерной периферии" }
+        - insert:
+            tableName: manufacturer
+            columns:
+              - column: { name: company_name, value: "Razer" }
+              - column: { name: description, value: "Производитель игровой периферии" }
+        - insert:
+            tableName: manufacturer
+            columns:
+              - column: { name: company_name, value: "Corsair" }
+              - column: { name: description, value: "Производитель компонентов и периферии для ПК" }
+        - insert:
+            tableName: manufacturer
+            columns:
+              - column: { name: company_name, value: "Microsoft" }
+              - column: { name: description, value: "Производитель мышей, клавиатур и других устройств" }
+        - insert:
+            tableName: manufacturer
+            columns:
+              - column: { name: company_name, value: "HyperX" }
+              - column: { name: description, value: "Бренд игровой периферии" }

@@ -1,0 +1,23 @@
+databaseChangeLog:
+  - changeSet:
+      id: create_manufacturer
+      author: ilya
+      changes:
+        - createTable:
+            tableName: manufacturer
+            remarks: "Производитель"
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+                  remarks: "Первичный ключ"
+              - column:
+                  name: company_name
+                  type: VARCHAR(50)
+                  remarks: "Юридическое название компании"
+              - column:
+                  name: description
+                  type: TEXT
+                  remarks: "Описание компании"

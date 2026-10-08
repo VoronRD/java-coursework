@@ -1,0 +1,12 @@
+databaseChangeLog:
+  - changeSet:
+      id: fk_device_manufacturer
+      author: ilya
+      changes:
+        - addForeignKeyConstraint:
+            baseTableName: device
+            baseColumnNames: manufacturer_id
+            referencedTableName: manufacturer
+            referencedColumnNames: id
+            onDelete: CASCADE
+            constraintName: fk_device_manufacturer

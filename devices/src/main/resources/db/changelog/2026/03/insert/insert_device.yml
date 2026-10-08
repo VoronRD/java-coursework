@@ -1,0 +1,32 @@
+databaseChangeLog:
+  - changeSet:
+      id: insert_device_seed
+      author: ilya
+      changes:
+        - insert:
+            tableName: device
+            columns:
+              - column: { name: model_name, value: "MX Master 3S" }
+              - column: { name: manufacturer_id, valueComputed: "(SELECT id FROM manufacturer WHERE company_name = 'Logitech')" }
+              - column: { name: device_type_id, valueComputed: "(SELECT id FROM device_type WHERE type_name = 'Мышь')" }
+              - column: { name: connection_type_id, valueComputed: "(SELECT id FROM connection_type WHERE type_name = 'Bluetooth')" }
+              - column: { name: release_date, valueDate: "2022-06-01" }
+              - column: { name: description, value: "Беспроводная мышь с бесшумными колесиками" }
+        - insert:
+            tableName: device
+            columns:
+              - column: { name: model_name, value: "Razer DeathAdder V3" }
+              - column: { name: manufacturer_id, valueComputed: "(SELECT id FROM manufacturer WHERE company_name = 'Razer')" }
+              - column: { name: device_type_id, valueComputed: "(SELECT id FROM device_type WHERE type_name = 'Мышь')" }
+              - column: { name: connection_type_id, valueComputed: "(SELECT id FROM connection_type WHERE type_name = 'USB')" }
+              - column: { name: release_date, valueDate: "2022-08-15" }
+              - column: { name: description, value: "Игровая мышь с оптическим сенсором" }
+        - insert:
+            tableName: device
+            columns:
+              - column: { name: model_name, value: "Corsair K100 RGB" }
+              - column: { name: manufacturer_id, valueComputed: "(SELECT id FROM manufacturer WHERE company_name = 'Corsair')" }
+              - column: { name: device_type_id, valueComputed: "(SELECT id FROM device_type WHERE type_name = 'Клавиатура')" }
+              - column: { name: connection_type_id, valueComputed: "(SELECT id FROM connection_type WHERE type_name = 'USB')" }
+              - column: { name: release_date, valueDate: "2021-09-01" }
+              - column: { name: description, value: "Механическая клавиатура с оптическими переключателями" }

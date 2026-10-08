@@ -1,0 +1,19 @@
+databaseChangeLog:
+  - changeSet:
+      id: create_connection_type
+      author: ilya
+      changes:
+        - createTable:
+            tableName: connection_type
+            remarks: "Тип подключения"
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+                  remarks: "Первичный ключ"
+              - column:
+                  name: type_name
+                  type: VARCHAR(50)
+                  remarks: "Название типа"

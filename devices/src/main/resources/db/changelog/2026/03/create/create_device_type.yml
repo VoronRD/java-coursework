@@ -1,0 +1,19 @@
+databaseChangeLog:
+  - changeSet:
+      id: create_device_type
+      author: ilya
+      changes:
+        - createTable:
+            tableName: device_type
+            remarks: "Тип устройства"
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+                  remarks: "Первичный ключ"
+              - column:
+                  name: type_name
+                  type: VARCHAR(50)
+                  remarks: "Название типа"

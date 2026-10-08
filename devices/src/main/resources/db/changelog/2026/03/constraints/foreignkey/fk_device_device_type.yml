@@ -1,0 +1,12 @@
+databaseChangeLog:
+  - changeSet:
+      id: fk_device_device_type
+      author: ilya
+      changes:
+        - addForeignKeyConstraint:
+            baseTableName: device
+            baseColumnNames: device_type_id
+            referencedTableName: device_type
+            referencedColumnNames: id
+            onDelete: CASCADE
+            constraintName: fk_device_device_type
